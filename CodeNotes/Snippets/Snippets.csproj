@@ -17,6 +17,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="**/*.DotSettings" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
