@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="Snippets/Snippets.csproj" />
+  <Project Path="Snippets.FSharp/Snippets.FSharp.fsproj" />
 </Solution>
