@@ -11,6 +11,8 @@ public abstract class ModuleFixture
 
     protected IBookRegistrationHandler BookRegistrationHandler { get; private set; } = null!;
     protected IClosingRegistrationHandler ClosingRegistrationHandler { get; private set; } = null!;
+    protected IBookAvailabilityHandler BookAvailabilityHandler { get; private set; } = null!;
+    protected IBookRentingHandler BookRentingHandler { get; private set; } = null!;
 
     [SetUp]
     public void ModuleFixtureSetUp()
@@ -25,6 +27,8 @@ public abstract class ModuleFixture
 
         BookRegistrationHandler = provider.GetRequiredService<IBookRegistrationHandler>();
         ClosingRegistrationHandler = provider.GetRequiredService<IClosingRegistrationHandler>();
+        BookAvailabilityHandler = provider.GetRequiredService<IBookAvailabilityHandler>();
+        BookRentingHandler = provider.GetRequiredService<IBookRentingHandler>();
     }
 
     [TearDown]
@@ -41,5 +45,10 @@ public abstract class ModuleFixture
     protected Task GivenRegistrationClosed()
     {
         return ClosingRegistrationHandler.Handle(new ClosingRegistrationCommand(), CancellationToken.None);
+    }
+
+    protected Task<Result<BookRentingResult>> GivenRentedBook(Guid bookId)
+    {
+        return BookRentingHandler.Handle(new BookRentingCommand(bookId), CancellationToken.None);
     }
 }

@@ -1,4 +1,5 @@
 @WebApplication_HostAddress = http://localhost:5257
+@bookId = 00000000-0000-0000-0000-000000000000
 
 POST {{WebApplication_HostAddress}}/books
 Content-Type: application/json
@@ -13,5 +14,13 @@ Content-Type: application/json
 ###
 
 POST {{WebApplication_HostAddress}}/books/registration/close
+
+###
+
+GET {{WebApplication_HostAddress}}/books/{{bookId}}/availability
+
+###
+
+POST {{WebApplication_HostAddress}}/books/{{bookId}}/rent
 
 ###

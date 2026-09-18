@@ -49,4 +49,17 @@ public abstract class WebApiFixture
     {
         return Client.PostAsync("/books/registration/close", null);
     }
+
+    protected async Task<Guid> GivenRegisteredBookIdAsync(BookRegistrationCommand command)
+    {
+        HttpResponseMessage response = await GivenRegisteredBookAsync(command);
+        var result = await response.Content.ReadFromJsonAsync<BookRegistrationResult>();
+
+        return result!.BookId;
+    }
+
+    protected Task<HttpResponseMessage> GivenRentedBookAsync(Guid bookId)
+    {
+        return Client.PostAsync($"/books/{bookId}/rent", null);
+    }
 }

@@ -13,6 +13,8 @@ public static class ModuleExtensions
         services.AddDbContext<BooksDbContext>(configureDbContext);
         services.AddTransient<IBookRegistrationHandler, BookRegistrationHandler>();
         services.AddTransient<IClosingRegistrationHandler, ClosingRegistrationHandler>();
+        services.AddTransient<IBookAvailabilityHandler, BookAvailabilityHandler>();
+        services.AddTransient<IBookRentingHandler, BookRentingHandler>();
 
         return services;
     }
@@ -21,6 +23,8 @@ public static class ModuleExtensions
     {
         app.MapBookRegistration();
         app.MapClosingRegistration();
+        app.MapBookAvailability();
+        app.MapBookRenting();
     }
 
     public static void InitializeBusinessLogicModuleDatabase(this IServiceProvider services)

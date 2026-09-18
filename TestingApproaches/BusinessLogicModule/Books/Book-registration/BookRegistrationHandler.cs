@@ -38,7 +38,7 @@ internal sealed class BookRegistrationHandler(BooksDbContext db): IBookRegistrat
             );
         }
 
-        var book = new Book(Guid.NewGuid(), command.Isbn, command.Title, command.Author, command.CopiesAvailable);
+        Book book = Book.Register(command.Isbn, command.Title, command.Author, command.CopiesAvailable);
 
         db.Books.Add(book);
         await db.SaveChangesAsync(cancellationToken);
