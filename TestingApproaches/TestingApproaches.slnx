@@ -5,5 +5,6 @@
     </Folder>
     <Project Path="BusinessLogicModule/BusinessLogicModule.csproj"/>
     <Project Path="DbMockInMemory.Tests/DbMockInMemory.Tests.csproj"/>
+    <Project Path="DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj"/>
     <Project Path="WebApplication/WebApplication.csproj"/>
 </Solution>
