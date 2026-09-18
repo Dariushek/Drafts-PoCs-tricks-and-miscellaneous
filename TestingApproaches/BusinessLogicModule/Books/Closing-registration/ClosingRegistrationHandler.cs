@@ -1,14 +1,21 @@
+using BusinessLogicModule.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 namespace BusinessLogicModule.Books;
 
 public interface IClosingRegistrationHandler
 {
-    void Handle(ClosingRegistrationCommand command);
+    Task Handle(ClosingRegistrationCommand command, CancellationToken cancellationToken);
 }
 
-internal sealed class ClosingRegistrationHandler(BookCatalog catalog) : IClosingRegistrationHandler
+internal sealed class ClosingRegistrationHandler(BooksDbContext db) : IClosingRegistrationHandler
 {
-    public void Handle(ClosingRegistrationCommand command)
+    public async Task Handle(ClosingRegistrationCommand command, CancellationToken cancellationToken)
     {
-        catalog.IsRegistrationOpen = false;
+        BookRegistrationWindow window = await db.RegistrationWindow.SingleAsync(cancellationToken);
+
+        window.Close();
+
+        await db.SaveChangesAsync(cancellationToken);
     }
 }

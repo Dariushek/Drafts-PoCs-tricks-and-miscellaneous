@@ -1,18 +1,35 @@
 using System.Net.Http.Json;
+using BusinessLogicModule;
 using BusinessLogicModule.Books;
+using BusinessLogicModule.Persistence;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace DbMockInMemory.Tests.WebApi;
 
 public abstract class WebApiFixture
 {
-    protected WebApplicationFactory<Program> Factory { get; private set; } = null!;
+    private WebApplicationFactory<Program> Factory { get; set; } = null!;
     protected HttpClient Client { get; private set; } = null!;
 
     [SetUp]
     public void WebApiFixtureSetUp()
     {
-        Factory = new WebApplicationFactory<Program>();
+        string databaseName = Guid.NewGuid().ToString();
+
+        Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            builder.ConfigureServices(services =>
+            {
+                services.RemoveAll<DbContextOptions<BooksDbContext>>();
+                services.RemoveAll<IDbContextOptionsConfiguration<BooksDbContext>>();
+                services.AddDbContext<BooksDbContext>(options => options.UseInMemoryDatabase(databaseName));
+            })
+        );
+
+        Factory.Services.InitializeBusinessLogicModuleDatabase();
         Client = Factory.CreateClient();
     }
 

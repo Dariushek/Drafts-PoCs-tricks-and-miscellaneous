@@ -12,12 +12,13 @@ internal static class BookRegistration
         app.MapPost("/books", Handle).WithName("BookRegistration");
     }
 
-    private static Results<ValidationProblem, ProblemHttpResult, Created<BookRegistrationResult>> Handle(
+    private static async Task<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistrationResult>>> Handle(
     BookRegistrationCommand command,
-    IBookRegistrationHandler handler
+    IBookRegistrationHandler handler,
+    CancellationToken cancellationToken
     )
     {
-        Result<BookRegistrationResult> result = handler.Handle(command);
+        Result<BookRegistrationResult> result = await handler.Handle(command, cancellationToken);
 
         return result.Match<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistrationResult>>>(
             value => TypedResults.Created($"/books/{value.BookId}", value),

@@ -1,17 +1,21 @@
+using BusinessLogicModule.Persistence;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicModule.Books;
 
 public interface IBookRegistrationHandler
 {
-    Result<BookRegistrationResult> Handle(BookRegistrationCommand command);
+    Task<Result<BookRegistrationResult>> Handle(BookRegistrationCommand command, CancellationToken cancellationToken);
 }
 
-internal sealed class BookRegistrationHandler(BookCatalog catalog): IBookRegistrationHandler
+internal sealed class BookRegistrationHandler(BooksDbContext db): IBookRegistrationHandler
 {
-    public Result<BookRegistrationResult> Handle(BookRegistrationCommand command)
+    public async Task<Result<BookRegistrationResult>> Handle(BookRegistrationCommand command, CancellationToken cancellationToken)
     {
-        if (!catalog.IsRegistrationOpen)
+        BookRegistrationWindow window = await db.RegistrationWindow.SingleAsync(cancellationToken);
+
+        if (!window.IsOpen)
         {
             return Result<BookRegistrationResult>.Failure(
                 Error.Domain("RegistrationClosed", "Book registration is currently closed.", StatusCodes.Status400BadRequest)
@@ -25,7 +29,9 @@ internal sealed class BookRegistrationHandler(BookCatalog catalog): IBookRegistr
             );
         }
 
-        if (catalog.IsIsbnRegistered(command.Isbn))
+        bool isbnRegistered = await db.Books.AnyAsync(book => book.Isbn == command.Isbn, cancellationToken);
+
+        if (isbnRegistered)
         {
             return Result<BookRegistrationResult>.Failure(
                 Error.Domain("IsbnAlreadyRegistered", $"A book with ISBN '{command.Isbn}' is already registered.", StatusCodes.Status409Conflict)
@@ -34,7 +40,8 @@ internal sealed class BookRegistrationHandler(BookCatalog catalog): IBookRegistr
 
         var book = new Book(Guid.NewGuid(), command.Isbn, command.Title, command.Author, command.CopiesAvailable);
 
-        catalog.Add(book);
+        db.Books.Add(book);
+        await db.SaveChangesAsync(cancellationToken);
 
         return Result<BookRegistrationResult>.Success(new BookRegistrationResult(book.Id));
     }
