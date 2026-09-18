@@ -1,9 +1,9 @@
 <Solution>
-  <Folder Name="/Solution items/">
-    <File Path="..\Agents.md" />
-    <File Path="..\CLAUDE.md" />
-  </Folder>
-  <Project Path="BusinessLogicModule/BusinessLogicModule.csproj" />
-  <Project Path="DbMockInMemory.Tests/DbMockInMemory.Tests.csproj" />
-  <Project Path="WebApplication/WebApplication.csproj" />
+    <Folder Name="/Solution items/">
+        <File Path="..\Agents.md"/>
+        <File Path="..\CLAUDE.md"/>
+    </Folder>
+    <Project Path="BusinessLogicModule/BusinessLogicModule.csproj"/>
+    <Project Path="DbMockInMemory.Tests/DbMockInMemory.Tests.csproj"/>
+    <Project Path="WebApplication/WebApplication.csproj"/>
 </Solution>

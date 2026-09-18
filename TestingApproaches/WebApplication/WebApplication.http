@@ -11,3 +11,7 @@ Content-Type: application/json
 }
 
 ###
+
+POST {{WebApplication_HostAddress}}/books/registration/close
+
+###

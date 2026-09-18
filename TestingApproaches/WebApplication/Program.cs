@@ -1,17 +1,17 @@
 using BusinessLogicModule;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddBusinessLogicModule();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
-}
 
 app.MapBusinessLogicModule();
 
 app.Run();
+
+public partial class Program;
