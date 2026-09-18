@@ -1,6 +1,13 @@
 @WebApplication_HostAddress = http://localhost:5257
 
-GET {{WebApplication_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{WebApplication_HostAddress}}/books
+Content-Type: application/json
+
+{
+  "Isbn": "978-0-13-468599-1",
+  "Title": "Clean Code",
+  "Author": "Robert C. Martin",
+  "CopiesAvailable": 3
+}
 
 ###
