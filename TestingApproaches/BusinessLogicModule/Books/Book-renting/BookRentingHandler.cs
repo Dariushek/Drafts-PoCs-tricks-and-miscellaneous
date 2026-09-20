@@ -18,14 +18,14 @@ internal sealed class BookRentingHandler(BooksDbContext db) : IBookRentingHandle
         if (book is null)
         {
             return Result<BookRentingResult>.Failure(
-                Error.Domain("BookNotFound", $"No book found with id '{command.BookId}'.", StatusCodes.Status404NotFound)
+                new Error("BookNotFound", $"No book found with id '{command.BookId}'.", StatusCode: StatusCodes.Status404NotFound)
             );
         }
 
         if (!book.IsAvailableToRent)
         {
             return Result<BookRentingResult>.Failure(
-                Error.Domain("BookOutOfStock", $"Book '{book.Title}' has no copies available to rent.", StatusCodes.Status409Conflict)
+                new Error("BookOutOfStock", $"Book '{book.Title}' has no copies available to rent.", StatusCode: StatusCodes.Status409Conflict)
             );
         }
 

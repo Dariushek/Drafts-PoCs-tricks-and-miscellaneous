@@ -18,7 +18,7 @@ internal sealed class BookAvailabilityHandler(BooksDbContext db) : IBookAvailabi
         if (book is null)
         {
             return Result<BookAvailabilityResult>.Failure(
-                Error.Domain("BookNotFound", $"No book found with id '{query.BookId}'.", StatusCodes.Status404NotFound)
+                new Error("BookNotFound", $"No book found with id '{query.BookId}'.", StatusCode: StatusCodes.Status404NotFound)
             );
         }
 

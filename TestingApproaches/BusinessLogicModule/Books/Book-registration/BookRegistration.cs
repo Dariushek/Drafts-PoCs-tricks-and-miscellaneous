@@ -28,7 +28,7 @@ internal static class BookRegistration
 
     private static Results<ValidationProblem, ProblemHttpResult, Created<BookRegistrationResult>> MapErrors(IReadOnlyList<Error> errors)
     {
-        if (errors[0].Type == ErrorType.Validation)
+        if (errors[0].Field is not null)
         {
             return TypedResults.ValidationProblem(
                 errors.GroupBy(e => e.Field ?? string.Empty).ToDictionary(g => g.Key, g => g.Select(e => e.Message).ToArray())

@@ -31,7 +31,7 @@ public class BookRentingTests : ModuleFixture
         );
 
         Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.Type == ErrorType.Domain && error.StatusCode == 409));
+        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 409));
     }
 
     [Test]
@@ -42,6 +42,6 @@ public class BookRentingTests : ModuleFixture
         );
 
         Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.Type == ErrorType.Domain && error.StatusCode == 404));
+        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 404));
     }
 }

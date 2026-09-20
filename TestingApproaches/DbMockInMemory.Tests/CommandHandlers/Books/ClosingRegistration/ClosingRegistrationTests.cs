@@ -14,6 +14,6 @@ public class ClosingRegistrationTests : ModuleFixture
         Result<BookRegistrationResult> result = await BookRegistrationHandler.Handle(command, CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.Type == ErrorType.Domain && error.StatusCode == 400));
+        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 400));
     }
 }

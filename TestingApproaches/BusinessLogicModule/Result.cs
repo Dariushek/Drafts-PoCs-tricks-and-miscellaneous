@@ -30,9 +30,6 @@ public sealed class Result<TValue>
 
     public static Result<TValue> Failure(params IReadOnlyList<Error> errors)
     {
-        if (errors.Select(error => error.Type).Distinct().Count() > 1)
-            throw new ArgumentException("All errors in a failed result must share the same error type.", nameof(errors));
-
         return new Result<TValue>(errors);
     }
 

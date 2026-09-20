@@ -24,7 +24,7 @@ public class BookRegistrationTests : ModuleFixture
         Result<BookRegistrationResult> result = await BookRegistrationHandler.Handle(command, CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error is { Type: ErrorType.Validation, Field: "CopiesAvailable" }));
+        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error is { Field: "CopiesAvailable" }));
     }
 
     [Test]
@@ -36,7 +36,7 @@ public class BookRegistrationTests : ModuleFixture
         Result<BookRegistrationResult> result = await BookRegistrationHandler.Handle(command, CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.Type == ErrorType.Domain && error.StatusCode == 409));
+        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 409));
     }
 
     [Test]
@@ -48,6 +48,6 @@ public class BookRegistrationTests : ModuleFixture
         Result<BookRegistrationResult> result = await BookRegistrationHandler.Handle(command, CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error is { Type: ErrorType.Domain, Field: null, StatusCode: 400 }));
+        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error is { Field: null, StatusCode: 400 }));
     }
 }

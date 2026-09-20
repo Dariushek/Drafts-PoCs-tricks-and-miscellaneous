@@ -18,14 +18,14 @@ internal sealed class BookRegistrationHandler(BooksDbContext db): IBookRegistrat
         if (!window.IsOpen)
         {
             return Result<BookRegistrationResult>.Failure(
-                Error.Domain("RegistrationClosed", "Book registration is currently closed.", StatusCodes.Status400BadRequest)
+                new Error("RegistrationClosed", "Book registration is currently closed.", StatusCode: StatusCodes.Status400BadRequest)
             );
         }
 
         if (command.CopiesAvailable < 0)
         {
             return Result<BookRegistrationResult>.Failure(
-                Error.Validation("CopiesAvailable", "Must be zero or greater.")
+                new Error("CopiesAvailable", "Must be zero or greater.", "CopiesAvailable")
             );
         }
 
@@ -34,7 +34,7 @@ internal sealed class BookRegistrationHandler(BooksDbContext db): IBookRegistrat
         if (isbnRegistered)
         {
             return Result<BookRegistrationResult>.Failure(
-                Error.Domain("IsbnAlreadyRegistered", $"A book with ISBN '{command.Isbn}' is already registered.", StatusCodes.Status409Conflict)
+                new Error("IsbnAlreadyRegistered", $"A book with ISBN '{command.Isbn}' is already registered.", StatusCode: StatusCodes.Status409Conflict)
             );
         }
 
