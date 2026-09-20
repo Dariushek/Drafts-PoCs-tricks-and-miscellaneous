@@ -79,6 +79,7 @@ PublishScripts/
 
 # Test results
 [Tt]est[Rr]esult*/
+TestingApproaches/bench-results/
 [Bb]uild[Ww]eb.log
 coverage*.json
 coverage*.xml

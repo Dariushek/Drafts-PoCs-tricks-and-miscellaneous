@@ -1,10 +1,11 @@
 <Solution>
     <Folder Name="/Solution items/">
-        <File Path="..\Agents.md"/>
-        <File Path="..\CLAUDE.md"/>
+        <File Path="..\Agents.md" />
+        <File Path="..\CLAUDE.md" />
+        <File Path="bench.sh" />
     </Folder>
-    <Project Path="BusinessLogicModule/BusinessLogicModule.csproj"/>
-    <Project Path="DbMockInMemory.Tests/DbMockInMemory.Tests.csproj"/>
-    <Project Path="DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj"/>
-    <Project Path="WebApplication/WebApplication.csproj"/>
+    <Project Path="BusinessLogicModule/BusinessLogicModule.csproj" />
+    <Project Path="DbMockInMemory.Tests/DbMockInMemory.Tests.csproj" />
+    <Project Path="DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj" />
+    <Project Path="WebApplication/WebApplication.csproj" />
 </Solution>
