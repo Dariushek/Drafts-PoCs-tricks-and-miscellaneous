@@ -1,6 +1,5 @@
 using BusinessLogicModule.Persistence;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicModule.Books;
 
@@ -9,11 +8,11 @@ public interface IBookRentingHandler
     Task<Result<BookRentingResult>> Handle(BookRentingCommand command, CancellationToken cancellationToken);
 }
 
-internal sealed class BookRentingHandler(BooksDbContext db) : IBookRentingHandler
+internal sealed class BookRentingHandler(IBookRepository repository) : IBookRentingHandler
 {
     public async Task<Result<BookRentingResult>> Handle(BookRentingCommand command, CancellationToken cancellationToken)
     {
-        Book? book = await db.Books.SingleOrDefaultAsync(book => book.Id == command.BookId, cancellationToken);
+        Book? book = await repository.GetByIdAsync(command.BookId, cancellationToken);
 
         if (book is null)
         {
@@ -30,7 +29,7 @@ internal sealed class BookRentingHandler(BooksDbContext db) : IBookRentingHandle
         }
 
         book.Rent();
-        await db.SaveChangesAsync(cancellationToken);
+        await repository.SaveAsync(book, cancellationToken);
 
         return Result<BookRentingResult>.Success(new BookRentingResult(book.Id, book.CopiesAvailable));
     }

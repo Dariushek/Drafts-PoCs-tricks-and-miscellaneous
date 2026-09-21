@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DbMockInMemory.Tests.WebApi.Books;
 
-public class BookRegistrationTests : WebApiFixture
+[TestFixture(RepositoryKind.Ef)]
+[TestFixture(RepositoryKind.Fake)]
+public class BookRegistrationTests(RepositoryKind repositoryKind) : WebApiFixture(repositoryKind)
 {
     [Test]
     public async Task Book_registration_registers_book()

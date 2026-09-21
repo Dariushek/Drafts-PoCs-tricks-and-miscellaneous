@@ -1,16 +1,13 @@
 using System.Net.Http.Json;
 using BusinessLogicModule;
 using BusinessLogicModule.Books;
-using BusinessLogicModule.Persistence;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace DbSqlContainerInMemory.Tests.WebApi;
 
-public abstract class WebApiFixture
+public abstract class WebApiFixture(RepositoryKind repositoryKind)
 {
     private WebApplicationFactory<Program> Factory { get; set; } = null!;
     protected HttpClient Client { get; private set; } = null!;
@@ -24,9 +21,16 @@ public abstract class WebApiFixture
         Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             builder.ConfigureServices(services =>
             {
-                services.RemoveAll<DbContextOptions<BooksDbContext>>();
-                services.RemoveAll<IDbContextOptionsConfiguration<BooksDbContext>>();
-                services.AddDbContext<BooksDbContext>(options => options.UseSqlServer(connectionString));
+                services.RemoveBusinessLogicModule();
+
+                if (repositoryKind == RepositoryKind.Ef)
+                {
+                    services.AddBusinessLogicModule(options => options.UseSqlServer(connectionString));
+                }
+                else
+                {
+                    services.AddBusinessLogicModuleWithPlainSql(connectionString, options => options.UseSqlServer(connectionString));
+                }
             })
         );
 

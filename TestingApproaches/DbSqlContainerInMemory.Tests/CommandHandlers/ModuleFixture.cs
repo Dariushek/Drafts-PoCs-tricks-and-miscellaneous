@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DbSqlContainerInMemory.Tests.CommandHandlers;
 
-public abstract class ModuleFixture
+public abstract class ModuleFixture(RepositoryKind repositoryKind)
 {
     private ServiceProvider provider = null!;
 
@@ -21,7 +21,16 @@ public abstract class ModuleFixture
         string connectionString = SqlContainerSetup.GetConnectionStringFor(databaseName);
 
         var services = new ServiceCollection();
-        services.AddBusinessLogicModule(options => options.UseSqlServer(connectionString));
+
+        if (repositoryKind == RepositoryKind.Ef)
+        {
+            services.AddBusinessLogicModule(options => options.UseSqlServer(connectionString));
+        }
+        else
+        {
+            services.AddBusinessLogicModuleWithPlainSql(connectionString, options => options.UseSqlServer(connectionString));
+        }
+
         provider = services.BuildServiceProvider();
 
         provider.InitializeBusinessLogicModuleDatabase();

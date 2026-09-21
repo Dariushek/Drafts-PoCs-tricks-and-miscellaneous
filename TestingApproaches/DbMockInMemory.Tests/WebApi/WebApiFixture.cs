@@ -1,16 +1,13 @@
 using System.Net.Http.Json;
 using BusinessLogicModule;
 using BusinessLogicModule.Books;
-using BusinessLogicModule.Persistence;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace DbMockInMemory.Tests.WebApi;
 
-public abstract class WebApiFixture
+public abstract class WebApiFixture(RepositoryKind repositoryKind)
 {
     private WebApplicationFactory<Program> Factory { get; set; } = null!;
     protected HttpClient Client { get; private set; } = null!;
@@ -23,9 +20,16 @@ public abstract class WebApiFixture
         Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             builder.ConfigureServices(services =>
             {
-                services.RemoveAll<DbContextOptions<BooksDbContext>>();
-                services.RemoveAll<IDbContextOptionsConfiguration<BooksDbContext>>();
-                services.AddDbContext<BooksDbContext>(options => options.UseInMemoryDatabase(databaseName));
+                services.RemoveBusinessLogicModule();
+
+                if (repositoryKind == RepositoryKind.Ef)
+                {
+                    services.AddBusinessLogicModule(options => options.UseInMemoryDatabase(databaseName, InMemoryRoot.Instance));
+                }
+                else
+                {
+                    services.AddBusinessLogicModuleWithFakeRepository();
+                }
             })
         );
 

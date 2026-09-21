@@ -25,6 +25,17 @@ internal sealed class Book
         CopiesAvailable = copiesAvailable
     };
 
+    // For repositories that hydrate a Book from a raw row instead of an EF
+    // change tracker (e.g. plain ADO.NET), where there's no other way in.
+    internal static Book FromPersistence(Guid id, string isbn, string title, string author, int copiesAvailable) => new()
+    {
+        Id = id,
+        Isbn = isbn,
+        Title = title,
+        Author = author,
+        CopiesAvailable = copiesAvailable
+    };
+
     public bool IsAvailableToRent => CopiesAvailable > 0;
 
     public void Rent()

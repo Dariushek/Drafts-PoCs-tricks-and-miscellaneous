@@ -4,7 +4,9 @@ using BusinessLogicModule.Books;
 
 namespace DbSqlContainerInMemory.Tests.WebApi.Books;
 
-public class ClosingRegistrationTests : WebApiFixture
+[TestFixture(RepositoryKind.Ef)]
+[TestFixture(RepositoryKind.PlainSql)]
+public class ClosingRegistrationTests(RepositoryKind repositoryKind) : WebApiFixture(repositoryKind)
 {
     [Test]
     public async Task Closing_registration_returns_no_content()

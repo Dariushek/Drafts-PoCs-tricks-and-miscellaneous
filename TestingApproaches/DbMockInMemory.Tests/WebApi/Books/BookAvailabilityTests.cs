@@ -4,7 +4,9 @@ using BusinessLogicModule.Books;
 
 namespace DbMockInMemory.Tests.WebApi.Books;
 
-public class BookAvailabilityTests : WebApiFixture
+[TestFixture(RepositoryKind.Ef)]
+[TestFixture(RepositoryKind.Fake)]
+public class BookAvailabilityTests(RepositoryKind repositoryKind) : WebApiFixture(repositoryKind)
 {
     [Test]
     public async Task Book_with_copies_available_is_available_to_rent()

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DbMockInMemory.Tests.CommandHandlers;
 
-public abstract class ModuleFixture
+public abstract class ModuleFixture(RepositoryKind repositoryKind)
 {
     private ServiceProvider provider = null!;
 
@@ -17,10 +17,18 @@ public abstract class ModuleFixture
     [SetUp]
     public void ModuleFixtureSetUp()
     {
-        string databaseName = Guid.NewGuid().ToString();
-
         var services = new ServiceCollection();
-        services.AddBusinessLogicModule(options => options.UseInMemoryDatabase(databaseName));
+
+        if (repositoryKind == RepositoryKind.Ef)
+        {
+            string databaseName = Guid.NewGuid().ToString();
+            services.AddBusinessLogicModule(options => options.UseInMemoryDatabase(databaseName, InMemoryRoot.Instance));
+        }
+        else
+        {
+            services.AddBusinessLogicModuleWithFakeRepository();
+        }
+
         provider = services.BuildServiceProvider();
 
         provider.InitializeBusinessLogicModuleDatabase();

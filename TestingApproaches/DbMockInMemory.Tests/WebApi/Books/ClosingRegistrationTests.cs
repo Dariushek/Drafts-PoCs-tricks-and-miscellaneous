@@ -4,7 +4,9 @@ using BusinessLogicModule.Books;
 
 namespace DbMockInMemory.Tests.WebApi.Books;
 
-public class ClosingRegistrationTests : WebApiFixture
+[TestFixture(RepositoryKind.Ef)]
+[TestFixture(RepositoryKind.Fake)]
+public class ClosingRegistrationTests(RepositoryKind repositoryKind) : WebApiFixture(repositoryKind)
 {
     [Test]
     public async Task Closing_registration_returns_no_content()

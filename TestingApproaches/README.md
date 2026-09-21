@@ -4,6 +4,19 @@ Compares two ways of testing against a database: in-memory EF Core provider
 (`DbMockInMemory.Tests`) vs. a real SQL Server via Testcontainers
 (`DbSqlContainerInMemory.Tests`).
 
+Each of those is further split by persistence implementation, via
+`BusinessLogicModule`'s `IBookRepository` abstraction (see
+`BusinessLogicModule/Persistence/`):
+
+| Project                       | `RepositoryKind.Ef` | second variant                    |
+|--------------------------------|----------------------|------------------------------------|
+| `DbMockInMemory.Tests`         | EF InMemory provider | `RepositoryKind.Fake` — hand-rolled in-memory dictionary, no EF at all |
+| `DbSqlContainerInMemory.Tests` | EF Core + SQL Server  | `RepositoryKind.PlainSql` — raw ADO.NET (`Microsoft.Data.SqlClient`) against the same SQL Server |
+
+Every test class carries both `[TestFixture(RepositoryKind...)]` variants and
+runs its bodies against each — same assertions, different persistence code
+underneath.
+
 ## Run tests
 
 ```bash
@@ -35,6 +48,17 @@ per-run container automatically — no config needed either way.
 Container uses tmpfs for data/log/secrets, so `up` always recreates it from
 scratch rather than restarting a stopped one (a stopped container with tmpfs
 mounts fails to reinitialize as the non-root `mssql` user).
+
+## EF InMemory gotcha (`DbMockInMemory.Tests`)
+
+`UseInMemoryDatabase(name)` alone doesn't reliably share a named database
+across different scopes (e.g. a `WebApplicationFactory` request vs. the
+scope that ran `EnsureCreated`) — rows and even `HasData` seeds can appear
+missing. Fix: pass an explicit, shared `InMemoryDatabaseRoot`
+(`DbMockInMemory.Tests/InMemoryRoot.cs`) to every `UseInMemoryDatabase` call,
+and compute the database name as a variable *before* the options lambda, not
+inline inside it (the lambda can run more than once; inline
+`Guid.NewGuid()` silently produces a different database per invocation).
 
 ## How tests are isolated
 

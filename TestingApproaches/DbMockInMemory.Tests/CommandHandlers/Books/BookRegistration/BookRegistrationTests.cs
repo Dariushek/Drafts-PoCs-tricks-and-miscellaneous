@@ -3,7 +3,9 @@ using BusinessLogicModule.Books;
 
 namespace DbMockInMemory.Tests.CommandHandlers.Books.BookRegistration;
 
-public class BookRegistrationTests : ModuleFixture
+[TestFixture(RepositoryKind.Ef)]
+[TestFixture(RepositoryKind.Fake)]
+public class BookRegistrationTests(RepositoryKind repositoryKind) : ModuleFixture(repositoryKind)
 {
     [Test]
     public async Task Book_registration_registers_book()

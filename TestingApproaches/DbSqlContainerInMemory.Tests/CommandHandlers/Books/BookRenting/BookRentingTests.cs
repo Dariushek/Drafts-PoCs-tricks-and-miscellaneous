@@ -3,7 +3,9 @@ using BusinessLogicModule.Books;
 
 namespace DbSqlContainerInMemory.Tests.CommandHandlers.Books.BookRenting;
 
-public class BookRentingTests : ModuleFixture
+[TestFixture(RepositoryKind.Ef)]
+[TestFixture(RepositoryKind.PlainSql)]
+public class BookRentingTests(RepositoryKind repositoryKind) : ModuleFixture(repositoryKind)
 {
     [Test]
     public async Task Renting_a_book_decreases_copies_available()

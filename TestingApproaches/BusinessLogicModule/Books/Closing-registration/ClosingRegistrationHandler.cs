@@ -1,5 +1,4 @@
 using BusinessLogicModule.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicModule.Books;
 
@@ -8,14 +7,14 @@ public interface IClosingRegistrationHandler
     Task Handle(ClosingRegistrationCommand command, CancellationToken cancellationToken);
 }
 
-internal sealed class ClosingRegistrationHandler(BooksDbContext db) : IClosingRegistrationHandler
+internal sealed class ClosingRegistrationHandler(IBookRepository repository) : IClosingRegistrationHandler
 {
     public async Task Handle(ClosingRegistrationCommand command, CancellationToken cancellationToken)
     {
-        BookRegistrationWindow window = await db.RegistrationWindow.SingleAsync(cancellationToken);
+        BookRegistrationWindow window = await repository.GetRegistrationWindowAsync(cancellationToken);
 
         window.Close();
 
-        await db.SaveChangesAsync(cancellationToken);
+        await repository.SaveRegistrationWindowAsync(window, cancellationToken);
     }
 }

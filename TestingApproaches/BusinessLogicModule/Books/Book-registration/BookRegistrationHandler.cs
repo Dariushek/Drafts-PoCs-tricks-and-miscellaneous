@@ -1,6 +1,5 @@
 using BusinessLogicModule.Persistence;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicModule.Books;
 
@@ -9,11 +8,11 @@ public interface IBookRegistrationHandler
     Task<Result<BookRegistrationResult>> Handle(BookRegistrationCommand command, CancellationToken cancellationToken);
 }
 
-internal sealed class BookRegistrationHandler(BooksDbContext db): IBookRegistrationHandler
+internal sealed class BookRegistrationHandler(IBookRepository repository): IBookRegistrationHandler
 {
     public async Task<Result<BookRegistrationResult>> Handle(BookRegistrationCommand command, CancellationToken cancellationToken)
     {
-        BookRegistrationWindow window = await db.RegistrationWindow.SingleAsync(cancellationToken);
+        BookRegistrationWindow window = await repository.GetRegistrationWindowAsync(cancellationToken);
 
         if (!window.IsOpen)
         {
@@ -29,7 +28,7 @@ internal sealed class BookRegistrationHandler(BooksDbContext db): IBookRegistrat
             );
         }
 
-        bool isbnRegistered = await db.Books.AnyAsync(book => book.Isbn == command.Isbn, cancellationToken);
+        bool isbnRegistered = await repository.IsIsbnRegisteredAsync(command.Isbn, cancellationToken);
 
         if (isbnRegistered)
         {
@@ -40,8 +39,7 @@ internal sealed class BookRegistrationHandler(BooksDbContext db): IBookRegistrat
 
         Book book = Book.Register(command.Isbn, command.Title, command.Author, command.CopiesAvailable);
 
-        db.Books.Add(book);
-        await db.SaveChangesAsync(cancellationToken);
+        await repository.AddAsync(book, cancellationToken);
 
         return Result<BookRegistrationResult>.Success(new BookRegistrationResult(book.Id));
     }
