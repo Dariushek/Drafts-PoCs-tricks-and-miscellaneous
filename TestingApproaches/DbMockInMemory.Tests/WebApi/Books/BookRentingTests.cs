@@ -7,7 +7,7 @@ namespace DbMockInMemory.Tests.WebApi.Books;
 
 [TestFixture(PersistenceKind.Ef)]
 [TestFixture(PersistenceKind.Fake)]
-public class BookRentingTests(PersistenceKind persistenceKind) : WebApiFixture(persistenceKind)
+public class BookRentingTests(PersistenceKind persistenceKind): WebApiFixture(persistenceKind)
 {
     [Test]
     public async Task Renting_a_book_decreases_copies_available()

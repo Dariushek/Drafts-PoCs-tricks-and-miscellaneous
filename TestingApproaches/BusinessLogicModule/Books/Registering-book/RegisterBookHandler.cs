@@ -17,7 +17,11 @@ internal sealed class RegisterBookHandler(IBookRepository repository): IRegister
         if (!window.IsOpen)
         {
             return Result<BookRegistration>.Failure(
-                new Error("RegistrationClosed", "Book registration is currently closed.", StatusCode: StatusCodes.Status400BadRequest)
+                new Error(
+                    "RegistrationClosed",
+                    "Book registration is currently closed.",
+                    StatusCode: StatusCodes.Status400BadRequest
+                )
             );
         }
 
@@ -33,7 +37,11 @@ internal sealed class RegisterBookHandler(IBookRepository repository): IRegister
         if (isbnRegistered)
         {
             return Result<BookRegistration>.Failure(
-                new Error("IsbnAlreadyRegistered", $"A book with ISBN '{command.Isbn}' is already registered.", StatusCode: StatusCodes.Status409Conflict)
+                new Error(
+                    "IsbnAlreadyRegistered",
+                    $"A book with ISBN '{command.Isbn}' is already registered.",
+                    StatusCode: StatusCodes.Status409Conflict
+                )
             );
         }
 
@@ -41,6 +49,6 @@ internal sealed class RegisterBookHandler(IBookRepository repository): IRegister
 
         await repository.AddAsync(book, cancellationToken);
 
-        return Result<BookRegistration>.Success(new BookRegistration(book.Id));
+        return Result<BookRegistration>.Success(new(book.Id));
     }
 }

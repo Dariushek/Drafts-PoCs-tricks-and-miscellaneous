@@ -2,11 +2,11 @@ namespace BusinessLogicModule;
 
 public sealed class Result<TValue>
 {
-    private readonly TValue? _value;
+    private readonly TValue? value;
 
     private Result(TValue value)
     {
-        _value = value;
+        this.value = value;
         IsSuccess = true;
         Errors = [];
     }
@@ -19,22 +19,15 @@ public sealed class Result<TValue>
 
     public bool IsSuccess { get; }
 
-    public TValue Value => IsSuccess ? _value! : throw new InvalidOperationException("Result has no value.");
+    public TValue Value => IsSuccess ? value! : throw new InvalidOperationException("Result has no value.");
 
     public IReadOnlyList<Error> Errors { get; }
 
-    public static Result<TValue> Success(TValue value)
-    {
-        return new Result<TValue>(value);
-    }
+    public static Result<TValue> Success(TValue value) => new(value);
 
-    public static Result<TValue> Failure(params IReadOnlyList<Error> errors)
-    {
-        return new Result<TValue>(errors);
-    }
+    public static Result<TValue> Failure(params IReadOnlyList<Error> errors) => new(errors);
 
-    public TResult Match<TResult>(Func<TValue, TResult> onSuccess, Func<IReadOnlyList<Error>, TResult> onFailure)
-    {
-        return IsSuccess ? onSuccess(_value!) : onFailure(Errors);
-    }
+    public TResult Match<TResult>
+        (Func<TValue, TResult> onSuccess, Func<IReadOnlyList<Error>, TResult> onFailure) =>
+        IsSuccess ? onSuccess(value!) : onFailure(Errors);
 }

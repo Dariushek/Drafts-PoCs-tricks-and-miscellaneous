@@ -19,44 +19,47 @@ public class MongoContainerSetup
     private const string PersistentPassword = "yourStrongPassword";
 
     private static MongoDbContainer? ephemeralContainer;
-    private static string rootConnectionString = null!;
 
-    public static string ConnectionString => rootConnectionString;
+    public static string ConnectionString { get; private set; } = null!;
 
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
-        string persistentConnectionString = BuildConnectionString(PersistentHost, PersistentPort, PersistentUsername, PersistentPassword);
+        string persistentConnectionString = BuildConnectionString(
+            PersistentHost,
+            PersistentPort,
+            PersistentUsername,
+            PersistentPassword
+        );
 
         if (await IsReachable(persistentConnectionString))
         {
-            rootConnectionString = persistentConnectionString;
+            ConnectionString = persistentConnectionString;
             return;
         }
 
         ephemeralContainer = new MongoDbBuilder(MongoImage)
-            .WithUsername(PersistentUsername)
-            .WithPassword(PersistentPassword)
-            .Build();
+                             .WithUsername(PersistentUsername)
+                             .WithPassword(PersistentPassword)
+                             .Build();
 
         await ephemeralContainer.StartAsync();
-        rootConnectionString = ephemeralContainer.GetConnectionString();
+        ConnectionString = ephemeralContainer.GetConnectionString();
     }
 
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        if (ephemeralContainer is not null)
-        {
+        if (ephemeralContainer is { })
             await ephemeralContainer.DisposeAsync();
-        }
 
         // Persistent container: per-test databases are left behind on
         // purpose - same reasoning as SqlContainerSetup. Run
         // ./db-dev-mongo.sh clean to reset it.
     }
 
-    private static string BuildConnectionString(string host, int port, string username, string password) =>
+    private static string BuildConnectionString
+        (string host, int port, string username, string password) =>
         $"mongodb://{username}:{password}@{host}:{port}/?directConnection=true";
 
     private static async Task<bool> IsReachable(string connectionString)

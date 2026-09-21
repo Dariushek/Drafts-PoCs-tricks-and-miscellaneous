@@ -7,7 +7,7 @@ namespace DbSqlContainerInMemory.Tests.WebApi.Books;
 
 [TestFixture(PersistenceKind.Ef)]
 [TestFixture(PersistenceKind.PlainSql)]
-public class EndpointTests(PersistenceKind persistenceKind) : WebApiFixture(persistenceKind)
+public class EndpointTests(PersistenceKind persistenceKind): WebApiFixture(persistenceKind)
 {
     [Test]
     public async Task Book_with_copies_available_is_available_to_rent()

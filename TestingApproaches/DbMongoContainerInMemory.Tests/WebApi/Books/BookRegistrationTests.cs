@@ -1,12 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
-using BusinessLogicModule;
 using BusinessLogicModule.Books;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DbMongoContainerInMemory.Tests.WebApi.Books;
 
-public class BookRegistrationTests : WebApiFixture
+public class BookRegistrationTests: WebApiFixture
 {
     [Test]
     public async Task Book_registration_registers_book()

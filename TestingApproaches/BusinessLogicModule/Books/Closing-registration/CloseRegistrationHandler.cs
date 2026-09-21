@@ -7,7 +7,7 @@ public interface ICloseRegistrationHandler
     Task Handle(CloseRegistration command, CancellationToken cancellationToken);
 }
 
-internal sealed class CloseRegistrationHandler(IBookRepository repository) : ICloseRegistrationHandler
+internal sealed class CloseRegistrationHandler(IBookRepository repository): ICloseRegistrationHandler
 {
     public async Task Handle(CloseRegistration command, CancellationToken cancellationToken)
     {

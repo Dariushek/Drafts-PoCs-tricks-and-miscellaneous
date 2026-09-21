@@ -12,9 +12,10 @@ internal static partial class Endpoint
         app.MapPost("/books/registration/close", HandleClosingRegistration).WithName("ClosingRegistration");
     }
 
-    private static async Task<NoContent> HandleClosingRegistration(ICloseRegistrationHandler handler, CancellationToken cancellationToken)
+    private static async Task<NoContent> HandleClosingRegistration
+        (ICloseRegistrationHandler handler, CancellationToken cancellationToken)
     {
-        await handler.Handle(new CloseRegistration(), cancellationToken);
+        await handler.Handle(new(), cancellationToken);
 
         return TypedResults.NoContent();
     }

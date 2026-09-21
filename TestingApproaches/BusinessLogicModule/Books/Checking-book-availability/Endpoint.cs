@@ -12,13 +12,14 @@ internal static partial class Endpoint
         app.MapGet("/books/{bookId:guid}/availability", HandleAvailability).WithName("BookAvailability");
     }
 
-    private static async Task<Results<ProblemHttpResult, Ok<BookAvailability>>> HandleAvailability(
-    Guid bookId,
-    ICheckBookAvailabilityHandler handler,
-    CancellationToken cancellationToken
+    private static async Task<Results<ProblemHttpResult, Ok<BookAvailability>>> HandleAvailability
+    (
+        Guid bookId,
+        ICheckBookAvailabilityHandler handler,
+        CancellationToken cancellationToken
     )
     {
-        Result<BookAvailability> result = await handler.Handle(new CheckBookAvailability(bookId), cancellationToken);
+        Result<BookAvailability> result = await handler.Handle(new(bookId), cancellationToken);
 
         return result.Match<Results<ProblemHttpResult, Ok<BookAvailability>>>(
             value => TypedResults.Ok(value),

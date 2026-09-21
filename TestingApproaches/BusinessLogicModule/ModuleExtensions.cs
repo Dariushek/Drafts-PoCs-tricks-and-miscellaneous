@@ -17,12 +17,14 @@ public static class ModuleExtensions
     // Mongo only. persistenceKind defaults to Ef, so production call sites
     // (Program.cs) don't need to change to pick up the other kinds becoming
     // available.
-    public static IServiceCollection AddBusinessLogicModule(
+    public static IServiceCollection AddBusinessLogicModule
+    (
         this IServiceCollection services,
         Action<DbContextOptionsBuilder>? configureDbContext = null,
         PersistenceKind persistenceKind = PersistenceKind.Ef,
         string? mongoConnectionString = null,
-        string? mongoDatabaseName = null)
+        string? mongoDatabaseName = null
+    )
     {
         if (persistenceKind == PersistenceKind.Fake)
         {
@@ -44,9 +46,11 @@ public static class ModuleExtensions
         ArgumentNullException.ThrowIfNull(configureDbContext);
 
         services.AddDbContext<BooksDbContext>(configureDbContext);
-        services.AddScoped<IBookRepository>(persistenceKind == PersistenceKind.PlainSql
-            ? sp => new PlainSqlBookRepository(sp.GetRequiredService<BooksDbContext>())
-            : sp => new EfBookRepository(sp.GetRequiredService<BooksDbContext>()));
+        services.AddScoped<IBookRepository>(
+            persistenceKind == PersistenceKind.PlainSql
+                ? sp => new PlainSqlBookRepository(sp.GetRequiredService<BooksDbContext>())
+                : sp => new EfBookRepository(sp.GetRequiredService<BooksDbContext>())
+        );
 
         return services.AddBookHandlers();
     }
@@ -87,12 +91,12 @@ public static class ModuleExtensions
         // registration window singleton is seeded explicitly instead.
         // Upsert keeps this idempotent if called more than once.
         scope.ServiceProvider.GetService<IMongoDatabase>()
-            ?.GetCollection<RegistrationWindowDocument>("registrationWindows")
-            .ReplaceOne(
-                w => w.Id == 1,
-                new RegistrationWindowDocument { Id = 1, IsOpen = true },
-                new ReplaceOptions { IsUpsert = true }
-            );
+             ?.GetCollection<RegistrationWindowDocument>("registrationWindows")
+             .ReplaceOne(
+                 w => w.Id == 1,
+                 new() { Id = 1, IsOpen = true },
+                 new ReplaceOptions { IsUpsert = true }
+             );
     }
 
     private static IServiceCollection AddBookHandlers(this IServiceCollection services)

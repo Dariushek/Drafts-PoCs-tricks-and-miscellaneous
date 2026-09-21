@@ -1,6 +1,6 @@
 using BusinessLogicModule.Books;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicModule.Persistence;
 
@@ -10,7 +10,7 @@ namespace BusinessLogicModule.Persistence;
 // connection string is read off that same (schema-only) BooksDbContext
 // rather than passed separately, so both repository kinds share one
 // AddBusinessLogicModule wiring.
-internal sealed class PlainSqlBookRepository(BooksDbContext db) : IBookRepository
+internal sealed class PlainSqlBookRepository(BooksDbContext db): IBookRepository
 {
     private readonly string connectionString = db.Database.GetConnectionString()!;
 
@@ -55,9 +55,9 @@ internal sealed class PlainSqlBookRepository(BooksDbContext db) : IBookRepositor
         await using SqlConnection connection = await OpenConnectionAsync(cancellationToken);
         await using SqlCommand command = connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO Books (Id, Isbn, Title, Author, CopiesAvailable)
-            VALUES (@Id, @Isbn, @Title, @Author, @CopiesAvailable)
-            """;
+                              INSERT INTO Books (Id, Isbn, Title, Author, CopiesAvailable)
+                              VALUES (@Id, @Isbn, @Title, @Author, @CopiesAvailable)
+                              """;
         AddBookParameters(command, book);
 
         await command.ExecuteNonQueryAsync(cancellationToken);
@@ -73,16 +73,15 @@ internal sealed class PlainSqlBookRepository(BooksDbContext db) : IBookRepositor
         await using SqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
 
         if (!await reader.ReadAsync(cancellationToken))
-        {
             return null;
-        }
 
         return Book.FromPersistence(
             reader.GetGuid(0),
             reader.GetString(1),
             reader.GetString(2),
             reader.GetString(3),
-            reader.GetInt32(4));
+            reader.GetInt32(4)
+        );
     }
 
     public async Task SaveAsync(Book book, CancellationToken cancellationToken)

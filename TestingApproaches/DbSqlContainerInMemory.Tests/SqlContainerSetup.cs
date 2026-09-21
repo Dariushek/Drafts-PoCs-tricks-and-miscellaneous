@@ -31,10 +31,10 @@ public class SqlContainerSetup
         }
 
         ephemeralContainer = new MsSqlBuilder(SqlServerImage)
-            .WithTmpfsMount("/var/opt/mssql/data")
-            .WithTmpfsMount("/var/opt/mssql/log")
-            .WithTmpfsMount("/var/opt/mssql/secrets")
-            .Build();
+                             .WithTmpfsMount("/var/opt/mssql/data")
+                             .WithTmpfsMount("/var/opt/mssql/log")
+                             .WithTmpfsMount("/var/opt/mssql/secrets")
+                             .Build();
 
         await ephemeralContainer.StartAsync();
         rootConnectionString = ephemeralContainer.GetConnectionString();
@@ -43,10 +43,8 @@ public class SqlContainerSetup
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        if (ephemeralContainer is not null)
-        {
+        if (ephemeralContainer is { })
             await ephemeralContainer.DisposeAsync();
-        }
 
         // Persistent container: per-test databases are left behind on
         // purpose (dropping them here or in each test's TearDown both cost
@@ -55,10 +53,7 @@ public class SqlContainerSetup
 
     public static string GetConnectionStringFor(string databaseName)
     {
-        var builder = new SqlConnectionStringBuilder(rootConnectionString)
-        {
-            InitialCatalog = databaseName
-        };
+        var builder = new SqlConnectionStringBuilder(rootConnectionString) { InitialCatalog = databaseName };
 
         return builder.ConnectionString;
     }
@@ -67,10 +62,7 @@ public class SqlContainerSetup
     {
         var builder = new SqlConnectionStringBuilder
         {
-            DataSource = $"{host},{port}",
-            UserID = "sa",
-            Password = password,
-            TrustServerCertificate = true
+            DataSource = $"{host},{port}", UserID = "sa", Password = password, TrustServerCertificate = true
         };
 
         return builder.ConnectionString;

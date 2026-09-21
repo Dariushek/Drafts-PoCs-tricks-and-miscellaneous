@@ -5,7 +5,7 @@ namespace DbMockInMemory.Tests.CommandHandlers.Books.BookRenting;
 
 [TestFixture(PersistenceKind.Ef)]
 [TestFixture(PersistenceKind.Fake)]
-public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(persistenceKind)
+public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persistenceKind)
 {
     [Test]
     public async Task Renting_a_book_decreases_copies_available()
@@ -14,7 +14,8 @@ public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(pers
         Result<BusinessLogicModule.Books.BookRegistration> registered = await GivenRegisteredBook(command);
 
         Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle(
-            new RentBook(registered.Value.BookId), CancellationToken.None
+            new(registered.Value.BookId),
+            CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.True);
@@ -29,7 +30,8 @@ public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(pers
         await GivenRentedBook(registered.Value.BookId);
 
         Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle(
-            new RentBook(registered.Value.BookId), CancellationToken.None
+            new(registered.Value.BookId),
+            CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.False);
@@ -40,7 +42,8 @@ public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(pers
     public async Task Unknown_book_cannot_be_rented()
     {
         Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle(
-            new RentBook(Guid.NewGuid()), CancellationToken.None
+            new(Guid.NewGuid()),
+            CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.False);

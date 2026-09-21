@@ -4,7 +4,10 @@ using Microsoft.EntityFrameworkCore;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-builder.Services.AddBusinessLogicModule(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BooksDb")));
+builder.Services.AddBusinessLogicModule(options => options.UseSqlServer(
+                                            builder.Configuration.GetConnectionString("BooksDb")
+                                        )
+);
 
 WebApplication app = builder.Build();
 

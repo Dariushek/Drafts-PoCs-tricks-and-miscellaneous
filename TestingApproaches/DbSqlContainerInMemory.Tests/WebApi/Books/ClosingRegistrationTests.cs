@@ -7,7 +7,7 @@ namespace DbSqlContainerInMemory.Tests.WebApi.Books;
 
 [TestFixture(PersistenceKind.Ef)]
 [TestFixture(PersistenceKind.PlainSql)]
-public class ClosingRegistrationTests(PersistenceKind persistenceKind) : WebApiFixture(persistenceKind)
+public class ClosingRegistrationTests(PersistenceKind persistenceKind): WebApiFixture(persistenceKind)
 {
     [Test]
     public async Task Closing_registration_returns_no_content()

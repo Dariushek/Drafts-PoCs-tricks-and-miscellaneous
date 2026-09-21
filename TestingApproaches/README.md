@@ -1,9 +1,7 @@
 # TestingApproaches
 
-Compares ways of testing against a database: in-memory EF Core provider
-(`DbMockInMemory.Tests`), a real SQL Server via Testcontainers
-(`DbSqlContainerInMemory.Tests`), and a real MongoDB via Testcontainers
-(`DbMongoContainerInMemory.Tests`).
+Compares ways of testing against a database: in-memory EF Core provider (`DbMockInMemory.Tests`), a real SQL Server via Testcontainers (`DbSqlContainerInMemory.Tests`), and a real
+MongoDB via Testcontainers (`DbMongoContainerInMemory.Tests`).
 
 The two SQL-backed projects are further split by persistence implementation,
 via `BusinessLogicModule`'s `IBookRepository` abstraction (see
@@ -12,11 +10,11 @@ via `BusinessLogicModule`'s `IBookRepository` abstraction (see
 extension method (`PersistenceKind` defaults to `Ef`, so `Program.cs`'s
 production call site is untouched):
 
-| Project                         | `PersistenceKind.Ef` | second variant                    |
-|----------------------------------|----------------------|------------------------------------|
-| `DbMockInMemory.Tests`           | EF InMemory provider | `PersistenceKind.Fake` — hand-rolled in-memory dictionary, no EF at all |
-| `DbSqlContainerInMemory.Tests`   | EF Core + SQL Server  | `PersistenceKind.PlainSql` — raw ADO.NET (`Microsoft.Data.SqlClient`) against the same SQL Server |
-| `DbMongoContainerInMemory.Tests` | *(n/a)*               | `PersistenceKind.Mongo` only — `MongoDB.Driver` is already the "no ORM" way of talking to Mongo, so there's no second variant to contrast it against |
+| Project                          | `PersistenceKind.Ef` | second variant                                                                                                                                       |
+|----------------------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `DbMockInMemory.Tests`           | EF InMemory provider | `PersistenceKind.Fake` — hand-rolled in-memory dictionary, no EF at all                                                                              |
+| `DbSqlContainerInMemory.Tests`   | EF Core + SQL Server | `PersistenceKind.PlainSql` — raw ADO.NET (`Microsoft.Data.SqlClient`) against the same SQL Server                                                    |
+| `DbMongoContainerInMemory.Tests` | *(n/a)*              | `PersistenceKind.Mongo` only — `MongoDB.Driver` is already the "no ORM" way of talking to Mongo, so there's no second variant to contrast it against |
 
 Every test class in the two-variant projects carries both
 `[TestFixture(PersistenceKind...)]` attributes and runs its bodies against
@@ -33,8 +31,7 @@ dotnet test DbMongoContainerInMemory.Tests/DbMongoContainerInMemory.Tests.csproj
 ```
 
 `DbSqlContainerInMemory.Tests` and `DbMongoContainerInMemory.Tests` each
-start their own container per run unless their persistent dev container
-(below) is running.
+start their own container per run unless their persistent dev container (below) is running.
 
 ## Speed up SQL container tests: persistent dev container
 
@@ -101,8 +98,7 @@ projects. `DbSqlContainerInMemory.Tests` and `DbMongoContainerInMemory.Tests`
 each share one server instance (ephemeral or the persistent dev container),
 but every test gets its own database on it:
 
-- Every test's `[SetUp]` generates a unique database name
-  (`test_{Guid.NewGuid():N}`, see `ModuleFixture.cs` / `WebApiFixture.cs`).
+- Every test's `[SetUp]` generates a unique database name (`test_{Guid.NewGuid():N}`, see `ModuleFixture.cs` / `WebApiFixture.cs`).
 - The connection string points at that database on the shared server.
 - `Database.EnsureCreated()` (SQL) builds that database's schema fresh
   before the test runs; Mongo has no schema to create, but
@@ -111,8 +107,7 @@ but every test gets its own database on it:
 - This is what makes parallel test execution safe: no two tests ever touch
   the same database.
 
-`[TearDown]` disposes the DB context / `WebApplicationFactory` but does
-**not** drop the database — dropping per test or in bulk both turned out
+`[TearDown]` disposes the DB context / `WebApplicationFactory` but does **not** drop the database — dropping per test or in bulk both turned out
 slower/flakier than just leaving it (a stray database is harmless; a 30s
 `ALTER DATABASE` timeout mid-run isn't, and the same logic applies to
 Mongo). Databases accumulate on the persistent containers across runs as a

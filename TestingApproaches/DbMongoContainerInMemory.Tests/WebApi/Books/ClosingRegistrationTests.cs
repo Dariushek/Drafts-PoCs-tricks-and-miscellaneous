@@ -1,11 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
-using BusinessLogicModule;
 using BusinessLogicModule.Books;
 
 namespace DbMongoContainerInMemory.Tests.WebApi.Books;
 
-public class ClosingRegistrationTests : WebApiFixture
+public class ClosingRegistrationTests: WebApiFixture
 {
     [Test]
     public async Task Closing_registration_returns_no_content()

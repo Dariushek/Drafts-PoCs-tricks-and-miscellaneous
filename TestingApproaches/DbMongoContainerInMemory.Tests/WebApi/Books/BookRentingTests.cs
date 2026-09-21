@@ -1,11 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
-using BusinessLogicModule;
 using BusinessLogicModule.Books;
 
 namespace DbMongoContainerInMemory.Tests.WebApi.Books;
 
-public class BookRentingTests : WebApiFixture
+public class BookRentingTests: WebApiFixture
 {
     [Test]
     public async Task Renting_a_book_decreases_copies_available()

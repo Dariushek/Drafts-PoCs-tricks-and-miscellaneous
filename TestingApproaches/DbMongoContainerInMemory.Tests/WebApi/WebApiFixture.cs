@@ -2,7 +2,6 @@ using System.Net.Http.Json;
 using BusinessLogicModule;
 using BusinessLogicModule.Books;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DbMongoContainerInMemory.Tests.WebApi;
 
@@ -14,18 +13,24 @@ public abstract class WebApiFixture
     [SetUp]
     public void WebApiFixtureSetUp()
     {
-        string databaseName = $"test_{Guid.NewGuid():N}";
+        var databaseName = $"test_{Guid.NewGuid():N}";
 
         Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            builder.ConfigureServices(services =>
-            {
-                services.RemoveBusinessLogicModule();
-                services.AddBusinessLogicModule(
-                    persistenceKind: PersistenceKind.Mongo,
-                    mongoConnectionString: MongoContainerSetup.ConnectionString,
-                    mongoDatabaseName: databaseName
-                );
-            })
+                                                                              builder.ConfigureServices(services =>
+                                                                                  {
+                                                                                      services
+                                                                                          .RemoveBusinessLogicModule();
+                                                                                      services.AddBusinessLogicModule(
+                                                                                          persistenceKind:
+                                                                                          PersistenceKind.Mongo,
+                                                                                          mongoConnectionString:
+                                                                                          MongoContainerSetup
+                                                                                              .ConnectionString,
+                                                                                          mongoDatabaseName:
+                                                                                          databaseName
+                                                                                      );
+                                                                                  }
+                                                                              )
         );
 
         Factory.Services.InitializeBusinessLogicModuleDatabase();
@@ -39,15 +44,12 @@ public abstract class WebApiFixture
         Factory.Dispose();
     }
 
-    protected Task<HttpResponseMessage> GivenRegisteredBookAsync(RegisterBook command)
-    {
-        return Client.PostAsJsonAsync("/books", command);
-    }
+    protected Task<HttpResponseMessage> GivenRegisteredBookAsync
+        (RegisterBook command) =>
+        Client.PostAsJsonAsync("/books", command);
 
-    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync()
-    {
-        return Client.PostAsync("/books/registration/close", null);
-    }
+    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync() =>
+        Client.PostAsync("/books/registration/close", null);
 
     protected async Task<Guid> GivenRegisteredBookIdAsync(RegisterBook command)
     {
@@ -57,8 +59,7 @@ public abstract class WebApiFixture
         return result!.BookId;
     }
 
-    protected Task<HttpResponseMessage> GivenRentedBookAsync(Guid bookId)
-    {
-        return Client.PostAsync($"/books/{bookId}/rent", null);
-    }
+    protected Task<HttpResponseMessage> GivenRentedBookAsync
+        (Guid bookId) =>
+        Client.PostAsync($"/books/{bookId}/rent", null);
 }

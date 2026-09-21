@@ -3,7 +3,7 @@ using MongoDB.Driver;
 
 namespace BusinessLogicModule.Persistence;
 
-internal sealed class MongoBookRepository(IMongoDatabase database) : IBookRepository
+internal sealed class MongoBookRepository(IMongoDatabase database): IBookRepository
 {
     private const int RegistrationWindowId = 1;
 
@@ -15,22 +15,28 @@ internal sealed class MongoBookRepository(IMongoDatabase database) : IBookReposi
     public async Task<BookRegistrationWindow> GetRegistrationWindowAsync(CancellationToken cancellationToken)
     {
         RegistrationWindowDocument document = await RegistrationWindows
-            .Find(w => w.Id == RegistrationWindowId)
-            .SingleAsync(cancellationToken);
+                                                    .Find(w => w.Id == RegistrationWindowId)
+                                                    .SingleAsync(cancellationToken);
 
         return BookRegistrationWindow.FromPersistence(document.Id, document.IsOpen);
     }
 
-    public Task SaveRegistrationWindowAsync(BookRegistrationWindow window, CancellationToken cancellationToken) =>
-        RegistrationWindows.ReplaceOneAsync(
+    public Task SaveRegistrationWindowAsync(BookRegistrationWindow window, CancellationToken cancellationToken)
+    {
+        return RegistrationWindows.ReplaceOneAsync(
             w => w.Id == window.Id,
-            new RegistrationWindowDocument { Id = window.Id, IsOpen = window.IsOpen },
-            cancellationToken: cancellationToken);
+            new() { Id = window.Id, IsOpen = window.IsOpen },
+            cancellationToken: cancellationToken
+        );
+    }
 
-    public async Task<bool> IsIsbnRegisteredAsync(string isbn, CancellationToken cancellationToken) =>
-        await Books.Find(b => b.Isbn == isbn).AnyAsync(cancellationToken);
+    public async Task<bool> IsIsbnRegisteredAsync(string isbn, CancellationToken cancellationToken)
+    {
+        return await Books.Find(b => b.Isbn == isbn).AnyAsync(cancellationToken);
+    }
 
-    public Task AddAsync(Book book, CancellationToken cancellationToken) =>
+    public Task AddAsync
+        (Book book, CancellationToken cancellationToken) =>
         Books.InsertOneAsync(ToDocument(book), cancellationToken: cancellationToken);
 
     public async Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -39,18 +45,27 @@ internal sealed class MongoBookRepository(IMongoDatabase database) : IBookReposi
 
         return document is null
             ? null
-            : Book.FromPersistence(document.Id, document.Isbn, document.Title, document.Author, document.CopiesAvailable);
+            : Book.FromPersistence(
+                document.Id,
+                document.Isbn,
+                document.Title,
+                document.Author,
+                document.CopiesAvailable
+            );
     }
 
-    public Task SaveAsync(Book book, CancellationToken cancellationToken) =>
-        Books.ReplaceOneAsync(b => b.Id == book.Id, ToDocument(book), cancellationToken: cancellationToken);
-
-    private static BookDocument ToDocument(Book book) => new()
+    public Task SaveAsync(Book book, CancellationToken cancellationToken)
     {
-        Id = book.Id,
-        Isbn = book.Isbn,
-        Title = book.Title,
-        Author = book.Author,
-        CopiesAvailable = book.CopiesAvailable
-    };
+        return Books.ReplaceOneAsync(b => b.Id == book.Id, ToDocument(book), cancellationToken: cancellationToken);
+    }
+
+    private static BookDocument ToDocument(Book book) =>
+        new()
+        {
+            Id = book.Id,
+            Isbn = book.Isbn,
+            Title = book.Title,
+            Author = book.Author,
+            CopiesAvailable = book.CopiesAvailable
+        };
 }

@@ -3,7 +3,6 @@ using BusinessLogicModule;
 using BusinessLogicModule.Books;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DbSqlContainerInMemory.Tests.WebApi;
 
@@ -15,15 +14,23 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
     [SetUp]
     public void WebApiFixtureSetUp()
     {
-        string databaseName = $"test_{Guid.NewGuid():N}";
+        var databaseName = $"test_{Guid.NewGuid():N}";
         string connectionString = SqlContainerSetup.GetConnectionStringFor(databaseName);
 
         Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            builder.ConfigureServices(services =>
-            {
-                services.RemoveBusinessLogicModule();
-                services.AddBusinessLogicModule(options => options.UseSqlServer(connectionString), persistenceKind);
-            })
+                                                                              builder.ConfigureServices(services =>
+                                                                                  {
+                                                                                      services
+                                                                                          .RemoveBusinessLogicModule();
+                                                                                      services.AddBusinessLogicModule(
+                                                                                          options => options
+                                                                                              .UseSqlServer(
+                                                                                                  connectionString
+                                                                                              ),
+                                                                                          persistenceKind
+                                                                                      );
+                                                                                  }
+                                                                              )
         );
 
         Factory.Services.InitializeBusinessLogicModuleDatabase();
@@ -37,15 +44,12 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
         Factory.Dispose();
     }
 
-    protected Task<HttpResponseMessage> GivenRegisteredBookAsync(RegisterBook command)
-    {
-        return Client.PostAsJsonAsync("/books", command);
-    }
+    protected Task<HttpResponseMessage> GivenRegisteredBookAsync
+        (RegisterBook command) =>
+        Client.PostAsJsonAsync("/books", command);
 
-    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync()
-    {
-        return Client.PostAsync("/books/registration/close", null);
-    }
+    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync() =>
+        Client.PostAsync("/books/registration/close", null);
 
     protected async Task<Guid> GivenRegisteredBookIdAsync(RegisterBook command)
     {
@@ -55,8 +59,7 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
         return result!.BookId;
     }
 
-    protected Task<HttpResponseMessage> GivenRentedBookAsync(Guid bookId)
-    {
-        return Client.PostAsync($"/books/{bookId}/rent", null);
-    }
+    protected Task<HttpResponseMessage> GivenRentedBookAsync
+        (Guid bookId) =>
+        Client.PostAsync($"/books/{bookId}/rent", null);
 }

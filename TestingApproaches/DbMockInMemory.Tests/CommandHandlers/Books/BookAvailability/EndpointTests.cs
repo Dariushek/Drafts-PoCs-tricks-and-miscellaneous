@@ -5,7 +5,7 @@ namespace DbMockInMemory.Tests.CommandHandlers.Books.BookAvailability;
 
 [TestFixture(PersistenceKind.Ef)]
 [TestFixture(PersistenceKind.Fake)]
-public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(persistenceKind)
+public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persistenceKind)
 {
     [Test]
     public async Task Book_with_copies_available_is_available_to_rent()
@@ -14,7 +14,8 @@ public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(pers
         Result<BusinessLogicModule.Books.BookRegistration> registered = await GivenRegisteredBook(command);
 
         Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle(
-            new BusinessLogicModule.Books.CheckBookAvailability(registered.Value.BookId), CancellationToken.None
+            new(registered.Value.BookId),
+            CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.True);
@@ -30,7 +31,8 @@ public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(pers
         await GivenRentedBook(registered.Value.BookId);
 
         Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle(
-            new BusinessLogicModule.Books.CheckBookAvailability(registered.Value.BookId), CancellationToken.None
+            new(registered.Value.BookId),
+            CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.True);
@@ -42,7 +44,8 @@ public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(pers
     public async Task Checking_availability_of_unknown_book_fails()
     {
         Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle(
-            new BusinessLogicModule.Books.CheckBookAvailability(Guid.NewGuid()), CancellationToken.None
+            new(Guid.NewGuid()),
+            CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.False);

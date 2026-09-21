@@ -3,7 +3,7 @@ using BusinessLogicModule.Books;
 
 namespace DbMongoContainerInMemory.Tests.CommandHandlers.Books.BookRenting;
 
-public class EndpointTests : ModuleFixture
+public class EndpointTests: ModuleFixture
 {
     [Test]
     public async Task Renting_a_book_decreases_copies_available()
@@ -12,7 +12,8 @@ public class EndpointTests : ModuleFixture
         Result<BusinessLogicModule.Books.BookRegistration> registered = await GivenRegisteredBook(command);
 
         Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle(
-            new RentBook(registered.Value.BookId), CancellationToken.None
+            new(registered.Value.BookId),
+            CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.True);
@@ -27,7 +28,8 @@ public class EndpointTests : ModuleFixture
         await GivenRentedBook(registered.Value.BookId);
 
         Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle(
-            new RentBook(registered.Value.BookId), CancellationToken.None
+            new(registered.Value.BookId),
+            CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.False);
@@ -38,7 +40,8 @@ public class EndpointTests : ModuleFixture
     public async Task Unknown_book_cannot_be_rented()
     {
         Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle(
-            new RentBook(Guid.NewGuid()), CancellationToken.None
+            new(Guid.NewGuid()),
+            CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.False);

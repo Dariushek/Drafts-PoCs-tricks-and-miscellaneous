@@ -17,7 +17,7 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
     [SetUp]
     public void ModuleFixtureSetUp()
     {
-        string databaseName = $"test_{Guid.NewGuid():N}";
+        var databaseName = $"test_{Guid.NewGuid():N}";
         string connectionString = SqlContainerSetup.GetConnectionStringFor(databaseName);
 
         var services = new ServiceCollection();
@@ -34,23 +34,15 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
     }
 
     [TearDown]
-    public void ModuleFixtureTearDown()
-    {
-        provider.Dispose();
-    }
+    public void ModuleFixtureTearDown() { provider.Dispose(); }
 
-    protected Task<Result<BookRegistration>> GivenRegisteredBook(RegisterBook command)
-    {
-        return RegisterBookHandler.Handle(command, CancellationToken.None);
-    }
+    protected Task<Result<BookRegistration>> GivenRegisteredBook
+        (RegisterBook command) =>
+        RegisterBookHandler.Handle(command, CancellationToken.None);
 
-    protected Task GivenRegistrationClosed()
-    {
-        return CloseRegistrationHandler.Handle(new CloseRegistration(), CancellationToken.None);
-    }
+    protected Task GivenRegistrationClosed() => CloseRegistrationHandler.Handle(new(), CancellationToken.None);
 
-    protected Task<Result<BookRenting>> GivenRentedBook(Guid bookId)
-    {
-        return RentBookHandler.Handle(new RentBook(bookId), CancellationToken.None);
-    }
+    protected Task<Result<BookRenting>> GivenRentedBook
+        (Guid bookId) =>
+        RentBookHandler.Handle(new(bookId), CancellationToken.None);
 }

@@ -12,11 +12,13 @@ internal static partial class Endpoint
         app.MapPost("/books", HandleRegistration).WithName("BookRegistration");
     }
 
-    private static async Task<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>>> HandleRegistration(
-    RegisterBook command,
-    IRegisterBookHandler handler,
-    CancellationToken cancellationToken
-    )
+    private static async Task<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>>>
+        HandleRegistration
+        (
+            RegisterBook command,
+            IRegisterBookHandler handler,
+            CancellationToken cancellationToken
+        )
     {
         Result<BookRegistration> result = await handler.Handle(command, cancellationToken);
 
@@ -26,12 +28,14 @@ internal static partial class Endpoint
         );
     }
 
-    private static Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>> MapRegistrationErrors(IReadOnlyList<Error> errors)
+    private static Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>> MapRegistrationErrors
+        (IReadOnlyList<Error> errors)
     {
-        if (errors[0].Field is not null)
+        if (errors[0].Field is { })
         {
             return TypedResults.ValidationProblem(
-                errors.GroupBy(e => e.Field ?? string.Empty).ToDictionary(g => g.Key, g => g.Select(e => e.Message).ToArray())
+                errors.GroupBy(e => e.Field ?? string.Empty)
+                      .ToDictionary(g => g.Key, g => g.Select(e => e.Message).ToArray())
             );
         }
 
