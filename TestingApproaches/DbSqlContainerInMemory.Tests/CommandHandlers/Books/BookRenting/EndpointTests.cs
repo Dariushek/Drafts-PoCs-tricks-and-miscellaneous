@@ -13,10 +13,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 2);
         Result<BusinessLogicModule.Books.BookRegistration> registered = await GivenRegisteredBook(command);
 
-        Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle(
-            new(registered.Value.BookId),
-            CancellationToken.None
-        );
+        Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle
+            (new(registered.Value.BookId), CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.True);
         Assert.That(result.Value.CopiesAvailable, Is.EqualTo(1));
@@ -29,10 +27,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         Result<BusinessLogicModule.Books.BookRegistration> registered = await GivenRegisteredBook(command);
         await GivenRentedBook(registered.Value.BookId);
 
-        Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle(
-            new(registered.Value.BookId),
-            CancellationToken.None
-        );
+        Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle
+            (new(registered.Value.BookId), CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
         Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 409));
@@ -41,10 +37,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
     [Test]
     public async Task Unknown_book_cannot_be_rented()
     {
-        Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle(
-            new(Guid.NewGuid()),
-            CancellationToken.None
-        );
+        Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle
+            (new(Guid.NewGuid()), CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
         Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 404));

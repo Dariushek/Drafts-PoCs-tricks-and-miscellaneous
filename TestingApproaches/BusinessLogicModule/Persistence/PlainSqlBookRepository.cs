@@ -75,13 +75,8 @@ internal sealed class PlainSqlBookRepository(BooksDbContext db): IBookRepository
         if (!await reader.ReadAsync(cancellationToken))
             return null;
 
-        return Book.FromPersistence(
-            reader.GetGuid(0),
-            reader.GetString(1),
-            reader.GetString(2),
-            reader.GetString(3),
-            reader.GetInt32(4)
-        );
+        return Book.FromPersistence
+            (reader.GetGuid(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetInt32(4));
     }
 
     public async Task SaveAsync(Book book, CancellationToken cancellationToken)

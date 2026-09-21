@@ -21,11 +21,10 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
 
         if (persistenceKind == PersistenceKind.Ef)
         {
-            var databaseName = Guid.NewGuid().ToString();
-            services.AddBusinessLogicModule(
-                options => options.UseInMemoryDatabase(databaseName, InMemoryRoot.Instance),
-                persistenceKind
-            );
+            var databaseName = Guid.NewGuid()
+                                   .ToString();
+            services.AddBusinessLogicModule
+                (options => options.UseInMemoryDatabase(databaseName, InMemoryRoot.Instance), persistenceKind);
         }
         else
             services.AddBusinessLogicModule(persistenceKind: persistenceKind);
@@ -44,12 +43,12 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
     public void ModuleFixtureTearDown() { provider.Dispose(); }
 
     protected Task<Result<BookRegistration>> GivenRegisteredBook
-        (RegisterBook command) =>
-        RegisterBookHandler.Handle(command, CancellationToken.None);
+        (RegisterBook command)
+        => RegisterBookHandler.Handle(command, CancellationToken.None);
 
     protected Task GivenRegistrationClosed() => CloseRegistrationHandler.Handle(new(), CancellationToken.None);
 
     protected Task<Result<BookRenting>> GivenRentedBook
-        (Guid bookId) =>
-        RentBookHandler.Handle(new(bookId), CancellationToken.None);
+        (Guid bookId)
+        => RentBookHandler.Handle(new(bookId), CancellationToken.None);
 }

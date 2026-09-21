@@ -15,22 +15,21 @@ public abstract class WebApiFixture
     {
         var databaseName = $"test_{Guid.NewGuid():N}";
 
-        Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-                                                                              builder.ConfigureServices(services =>
-                                                                                  {
-                                                                                      services
-                                                                                          .RemoveBusinessLogicModule();
-                                                                                      services.AddBusinessLogicModule(
-                                                                                          persistenceKind:
-                                                                                          PersistenceKind.Mongo,
-                                                                                          mongoConnectionString:
-                                                                                          MongoContainerSetup
-                                                                                              .ConnectionString,
-                                                                                          mongoDatabaseName:
-                                                                                          databaseName
-                                                                                      );
-                                                                                  }
-                                                                              )
+        Factory = new WebApplicationFactory<Program>().WithWebHostBuilder
+        (
+            builder => builder.ConfigureServices
+            (
+                services =>
+                {
+                    services.RemoveBusinessLogicModule();
+                    services.AddBusinessLogicModule
+                    (
+                        persistenceKind: PersistenceKind.Mongo,
+                        mongoConnectionString: MongoContainerSetup.ConnectionString,
+                        mongoDatabaseName: databaseName
+                    );
+                }
+            )
         );
 
         Factory.Services.InitializeBusinessLogicModuleDatabase();
@@ -45,11 +44,11 @@ public abstract class WebApiFixture
     }
 
     protected Task<HttpResponseMessage> GivenRegisteredBookAsync
-        (RegisterBook command) =>
-        Client.PostAsJsonAsync("/books", command);
+        (RegisterBook command)
+        => Client.PostAsJsonAsync("/books", command);
 
-    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync() =>
-        Client.PostAsync("/books/registration/close", null);
+    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync()
+        => Client.PostAsync("/books/registration/close", null);
 
     protected async Task<Guid> GivenRegisteredBookIdAsync(RegisterBook command)
     {
@@ -60,6 +59,6 @@ public abstract class WebApiFixture
     }
 
     protected Task<HttpResponseMessage> GivenRentedBookAsync
-        (Guid bookId) =>
-        Client.PostAsync($"/books/{bookId}/rent", null);
+        (Guid bookId)
+        => Client.PostAsync($"/books/{bookId}/rent", null);
 }

@@ -9,22 +9,17 @@ internal static partial class Endpoint
 {
     public static void MapBookAvailability(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/books/{bookId:guid}/availability", HandleAvailability).WithName("BookAvailability");
+        app.MapGet("/books/{bookId:guid}/availability", HandleAvailability)
+           .WithName("BookAvailability");
     }
 
     private static async Task<Results<ProblemHttpResult, Ok<BookAvailability>>> HandleAvailability
-    (
-        Guid bookId,
-        ICheckBookAvailabilityHandler handler,
-        CancellationToken cancellationToken
-    )
+        (Guid bookId, ICheckBookAvailabilityHandler handler, CancellationToken cancellationToken)
     {
         Result<BookAvailability> result = await handler.Handle(new(bookId), cancellationToken);
 
-        return result.Match<Results<ProblemHttpResult, Ok<BookAvailability>>>(
-            value => TypedResults.Ok(value),
-            MapAvailabilityErrors
-        );
+        return result.Match<Results<ProblemHttpResult, Ok<BookAvailability>>>
+            (value => TypedResults.Ok(value), MapAvailabilityErrors);
     }
 
     private static Results<ProblemHttpResult, Ok<BookAvailability>> MapAvailabilityErrors(IReadOnlyList<Error> errors)

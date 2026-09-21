@@ -30,11 +30,10 @@ public class SqlContainerSetup
             return;
         }
 
-        ephemeralContainer = new MsSqlBuilder(SqlServerImage)
-                             .WithTmpfsMount("/var/opt/mssql/data")
-                             .WithTmpfsMount("/var/opt/mssql/log")
-                             .WithTmpfsMount("/var/opt/mssql/secrets")
-                             .Build();
+        ephemeralContainer = new MsSqlBuilder(SqlServerImage).WithTmpfsMount("/var/opt/mssql/data")
+                                                             .WithTmpfsMount("/var/opt/mssql/log")
+                                                             .WithTmpfsMount("/var/opt/mssql/secrets")
+                                                             .Build();
 
         await ephemeralContainer.StartAsync();
         rootConnectionString = ephemeralContainer.GetConnectionString();
@@ -53,7 +52,10 @@ public class SqlContainerSetup
 
     public static string GetConnectionStringFor(string databaseName)
     {
-        var builder = new SqlConnectionStringBuilder(rootConnectionString) { InitialCatalog = databaseName };
+        var builder = new SqlConnectionStringBuilder(rootConnectionString)
+        {
+            InitialCatalog = databaseName
+        };
 
         return builder.ConnectionString;
     }
@@ -62,7 +64,10 @@ public class SqlContainerSetup
     {
         var builder = new SqlConnectionStringBuilder
         {
-            DataSource = $"{host},{port}", UserID = "sa", Password = password, TrustServerCertificate = true
+            DataSource = $"{host},{port}",
+            UserID = "sa",
+            Password = password,
+            TrustServerCertificate = true
         };
 
         return builder.ConnectionString;

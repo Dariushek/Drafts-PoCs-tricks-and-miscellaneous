@@ -25,12 +25,8 @@ public class MongoContainerSetup
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
-        string persistentConnectionString = BuildConnectionString(
-            PersistentHost,
-            PersistentPort,
-            PersistentUsername,
-            PersistentPassword
-        );
+        string persistentConnectionString = BuildConnectionString
+            (PersistentHost, PersistentPort, PersistentUsername, PersistentPassword);
 
         if (await IsReachable(persistentConnectionString))
         {
@@ -38,10 +34,9 @@ public class MongoContainerSetup
             return;
         }
 
-        ephemeralContainer = new MongoDbBuilder(MongoImage)
-                             .WithUsername(PersistentUsername)
-                             .WithPassword(PersistentPassword)
-                             .Build();
+        ephemeralContainer = new MongoDbBuilder(MongoImage).WithUsername(PersistentUsername)
+                                                           .WithPassword(PersistentPassword)
+                                                           .Build();
 
         await ephemeralContainer.StartAsync();
         ConnectionString = ephemeralContainer.GetConnectionString();
@@ -59,8 +54,8 @@ public class MongoContainerSetup
     }
 
     private static string BuildConnectionString
-        (string host, int port, string username, string password) =>
-        $"mongodb://{username}:{password}@{host}:{port}/?directConnection=true";
+        (string host, int port, string username, string password)
+        => $"mongodb://{username}:{password}@{host}:{port}/?directConnection=true";
 
     private static async Task<bool> IsReachable(string connectionString)
     {

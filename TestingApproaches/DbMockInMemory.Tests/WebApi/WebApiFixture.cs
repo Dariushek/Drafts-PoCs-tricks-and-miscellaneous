@@ -14,38 +14,29 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
     [SetUp]
     public void WebApiFixtureSetUp()
     {
-        var databaseName = Guid.NewGuid().ToString();
+        var databaseName = Guid.NewGuid()
+                               .ToString();
 
-        Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-                                                                              builder.ConfigureServices(services =>
-                                                                                  {
-                                                                                      services
-                                                                                          .RemoveBusinessLogicModule();
+        Factory = new WebApplicationFactory<Program>().WithWebHostBuilder
+        (
+            builder => builder.ConfigureServices
+            (
+                services =>
+                {
+                    services.RemoveBusinessLogicModule();
 
-                                                                                      if (persistenceKind
-                                                                                          == PersistenceKind.Ef)
-                                                                                      {
-                                                                                          services
-                                                                                              .AddBusinessLogicModule(
-                                                                                                  options => options
-                                                                                                      .UseInMemoryDatabase(
-                                                                                                          databaseName,
-                                                                                                          InMemoryRoot
-                                                                                                              .Instance
-                                                                                                      ),
-                                                                                                  persistenceKind
-                                                                                              );
-                                                                                      }
-                                                                                      else
-                                                                                      {
-                                                                                          services
-                                                                                              .AddBusinessLogicModule(
-                                                                                                  persistenceKind:
-                                                                                                  persistenceKind
-                                                                                              );
-                                                                                      }
-                                                                                  }
-                                                                              )
+                    if (persistenceKind == PersistenceKind.Ef)
+                    {
+                        services.AddBusinessLogicModule
+                        (
+                            options => options.UseInMemoryDatabase(databaseName, InMemoryRoot.Instance),
+                            persistenceKind
+                        );
+                    }
+                    else
+                        services.AddBusinessLogicModule(persistenceKind: persistenceKind);
+                }
+            )
         );
 
         Factory.Services.InitializeBusinessLogicModuleDatabase();
@@ -60,11 +51,11 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
     }
 
     protected Task<HttpResponseMessage> GivenRegisteredBookAsync
-        (RegisterBook command) =>
-        Client.PostAsJsonAsync("/books", command);
+        (RegisterBook command)
+        => Client.PostAsJsonAsync("/books", command);
 
-    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync() =>
-        Client.PostAsync("/books/registration/close", null);
+    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync()
+        => Client.PostAsync("/books/registration/close", null);
 
     protected async Task<Guid> GivenRegisteredBookIdAsync(RegisterBook command)
     {
@@ -75,6 +66,6 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
     }
 
     protected Task<HttpResponseMessage> GivenRentedBookAsync
-        (Guid bookId) =>
-        Client.PostAsync($"/books/{bookId}/rent", null);
+        (Guid bookId)
+        => Client.PostAsync($"/books/{bookId}/rent", null);
 }

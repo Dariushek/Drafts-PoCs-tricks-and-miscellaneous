@@ -14,8 +14,8 @@ internal sealed class InMemoryFakeBookRepository: IBookRepository
     private BookRegistrationWindow registrationWindow = BookRegistrationWindow.Opened(RegistrationWindowId);
 
     public Task<BookRegistrationWindow> GetRegistrationWindowAsync
-        (CancellationToken cancellationToken) =>
-        Task.FromResult(registrationWindow);
+        (CancellationToken cancellationToken)
+        => Task.FromResult(registrationWindow);
 
     public Task SaveRegistrationWindowAsync(BookRegistrationWindow window, CancellationToken cancellationToken)
     {
@@ -35,8 +35,8 @@ internal sealed class InMemoryFakeBookRepository: IBookRepository
     }
 
     public Task<Book?> GetByIdAsync
-        (Guid id, CancellationToken cancellationToken) =>
-        Task.FromResult(books.GetValueOrDefault(id));
+        (Guid id, CancellationToken cancellationToken)
+        => Task.FromResult(books.GetValueOrDefault(id));
 
     public Task SaveAsync(Book book, CancellationToken cancellationToken) => Task.CompletedTask;
 }

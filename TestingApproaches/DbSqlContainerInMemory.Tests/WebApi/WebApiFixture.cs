@@ -17,20 +17,16 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
         var databaseName = $"test_{Guid.NewGuid():N}";
         string connectionString = SqlContainerSetup.GetConnectionStringFor(databaseName);
 
-        Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-                                                                              builder.ConfigureServices(services =>
-                                                                                  {
-                                                                                      services
-                                                                                          .RemoveBusinessLogicModule();
-                                                                                      services.AddBusinessLogicModule(
-                                                                                          options => options
-                                                                                              .UseSqlServer(
-                                                                                                  connectionString
-                                                                                              ),
-                                                                                          persistenceKind
-                                                                                      );
-                                                                                  }
-                                                                              )
+        Factory = new WebApplicationFactory<Program>().WithWebHostBuilder
+        (
+            builder => builder.ConfigureServices
+            (
+                services =>
+                {
+                    services.RemoveBusinessLogicModule();
+                    services.AddBusinessLogicModule(options => options.UseSqlServer(connectionString), persistenceKind);
+                }
+            )
         );
 
         Factory.Services.InitializeBusinessLogicModuleDatabase();
@@ -45,11 +41,11 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
     }
 
     protected Task<HttpResponseMessage> GivenRegisteredBookAsync
-        (RegisterBook command) =>
-        Client.PostAsJsonAsync("/books", command);
+        (RegisterBook command)
+        => Client.PostAsJsonAsync("/books", command);
 
-    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync() =>
-        Client.PostAsync("/books/registration/close", null);
+    protected Task<HttpResponseMessage> GivenRegistrationClosedAsync()
+        => Client.PostAsync("/books/registration/close", null);
 
     protected async Task<Guid> GivenRegisteredBookIdAsync(RegisterBook command)
     {
@@ -60,6 +56,6 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
     }
 
     protected Task<HttpResponseMessage> GivenRentedBookAsync
-        (Guid bookId) =>
-        Client.PostAsync($"/books/{bookId}/rent", null);
+        (Guid bookId)
+        => Client.PostAsync($"/books/{bookId}/rent", null);
 }

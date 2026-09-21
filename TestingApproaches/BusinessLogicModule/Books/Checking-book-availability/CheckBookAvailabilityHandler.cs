@@ -16,8 +16,10 @@ internal sealed class CheckBookAvailabilityHandler(IBookRepository repository): 
 
         if (book is null)
         {
-            return Result<BookAvailability>.Failure(
-                new Error(
+            return Result<BookAvailability>.Failure
+            (
+                new Error
+                (
                     "BookNotFound",
                     $"No book found with id '{query.BookId}'.",
                     StatusCode: StatusCodes.Status404NotFound
@@ -25,8 +27,6 @@ internal sealed class CheckBookAvailabilityHandler(IBookRepository repository): 
             );
         }
 
-        return Result<BookAvailability>.Success(
-            new(book.Id, book.IsAvailableToRent, book.CopiesAvailable)
-        );
+        return Result<BookAvailability>.Success(new(book.Id, book.IsAvailableToRent, book.CopiesAvailable));
     }
 }

@@ -9,7 +9,8 @@ internal static partial class Endpoint
 {
     public static void MapClosingRegistration(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/books/registration/close", HandleClosingRegistration).WithName("ClosingRegistration");
+        app.MapPost("/books/registration/close", HandleClosingRegistration)
+           .WithName("ClosingRegistration");
     }
 
     private static async Task<NoContent> HandleClosingRegistration

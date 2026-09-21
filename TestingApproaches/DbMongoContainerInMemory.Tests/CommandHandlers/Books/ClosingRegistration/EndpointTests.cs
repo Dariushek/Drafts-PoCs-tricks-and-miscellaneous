@@ -11,10 +11,8 @@ public class EndpointTests: ModuleFixture
         await CloseRegistrationHandler.Handle(new(), CancellationToken.None);
         var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
 
-        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle(
-            command,
-            CancellationToken.None
-        );
+        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
+            (command, CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
         Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 400));

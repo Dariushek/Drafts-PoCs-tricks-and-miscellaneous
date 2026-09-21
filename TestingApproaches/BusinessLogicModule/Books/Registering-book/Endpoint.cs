@@ -9,23 +9,17 @@ internal static partial class Endpoint
 {
     public static void MapBookRegistration(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/books", HandleRegistration).WithName("BookRegistration");
+        app.MapPost("/books", HandleRegistration)
+           .WithName("BookRegistration");
     }
 
     private static async Task<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>>>
-        HandleRegistration
-        (
-            RegisterBook command,
-            IRegisterBookHandler handler,
-            CancellationToken cancellationToken
-        )
+        HandleRegistration(RegisterBook command, IRegisterBookHandler handler, CancellationToken cancellationToken)
     {
         Result<BookRegistration> result = await handler.Handle(command, cancellationToken);
 
-        return result.Match<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>>>(
-            value => TypedResults.Created($"/books/{value.BookId}", value),
-            MapRegistrationErrors
-        );
+        return result.Match<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>>>
+            (value => TypedResults.Created($"/books/{value.BookId}", value), MapRegistrationErrors);
     }
 
     private static Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>> MapRegistrationErrors
@@ -33,9 +27,15 @@ internal static partial class Endpoint
     {
         if (errors[0].Field is { })
         {
-            return TypedResults.ValidationProblem(
+            return TypedResults.ValidationProblem
+            (
                 errors.GroupBy(e => e.Field ?? string.Empty)
-                      .ToDictionary(g => g.Key, g => g.Select(e => e.Message).ToArray())
+                      .ToDictionary
+                      (
+                          g => g.Key,
+                          g => g.Select(e => e.Message)
+                                .ToArray()
+                      )
             );
         }
 

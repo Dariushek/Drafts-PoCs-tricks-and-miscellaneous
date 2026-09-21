@@ -16,8 +16,8 @@ internal sealed class Book
 
     public bool IsAvailableToRent => CopiesAvailable > 0;
 
-    public static Book Register(string isbn, string title, string author, int copiesAvailable) =>
-        new()
+    public static Book Register(string isbn, string title, string author, int copiesAvailable)
+        => new()
         {
             Id = Guid.NewGuid(),
             Isbn = isbn,
@@ -28,8 +28,8 @@ internal sealed class Book
 
     // For repositories that hydrate a Book from a raw row instead of an EF
     // change tracker (e.g. plain ADO.NET), where there's no other way in.
-    internal static Book FromPersistence(Guid id, string isbn, string title, string author, int copiesAvailable) =>
-        new()
+    internal static Book FromPersistence(Guid id, string isbn, string title, string author, int copiesAvailable)
+        => new()
         {
             Id = id,
             Isbn = isbn,

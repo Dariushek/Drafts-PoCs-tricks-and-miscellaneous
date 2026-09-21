@@ -28,6 +28,6 @@ public sealed class Result<TValue>
     public static Result<TValue> Failure(params IReadOnlyList<Error> errors) => new(errors);
 
     public TResult Match<TResult>
-        (Func<TValue, TResult> onSuccess, Func<IReadOnlyList<Error>, TResult> onFailure) =>
-        IsSuccess ? onSuccess(value!) : onFailure(Errors);
+        (Func<TValue, TResult> onSuccess, Func<IReadOnlyList<Error>, TResult> onFailure)
+        => IsSuccess ? onSuccess(value!) : onFailure(Errors);
 }

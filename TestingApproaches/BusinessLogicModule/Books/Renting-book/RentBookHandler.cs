@@ -16,8 +16,10 @@ internal sealed class RentBookHandler(IBookRepository repository): IRentBookHand
 
         if (book is null)
         {
-            return Result<BookRenting>.Failure(
-                new Error(
+            return Result<BookRenting>.Failure
+            (
+                new Error
+                (
                     "BookNotFound",
                     $"No book found with id '{command.BookId}'.",
                     StatusCode: StatusCodes.Status404NotFound
@@ -27,8 +29,10 @@ internal sealed class RentBookHandler(IBookRepository repository): IRentBookHand
 
         if (!book.IsAvailableToRent)
         {
-            return Result<BookRenting>.Failure(
-                new Error(
+            return Result<BookRenting>.Failure
+            (
+                new Error
+                (
                     "BookOutOfStock",
                     $"Book '{book.Title}' has no copies available to rent.",
                     StatusCode: StatusCodes.Status409Conflict

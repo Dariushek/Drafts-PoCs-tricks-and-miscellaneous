@@ -12,10 +12,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
     {
         var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
 
-        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle(
-            command,
-            CancellationToken.None
-        );
+        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
+            (command, CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.True);
         Assert.That(result.Value.BookId, Is.Not.EqualTo(Guid.Empty));
@@ -26,10 +24,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
     {
         var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", -1);
 
-        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle(
-            command,
-            CancellationToken.None
-        );
+        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
+            (command, CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
         Assert.That(result.Errors, Has.Some.Matches<Error>(error => error is { Field: "CopiesAvailable" }));
@@ -41,10 +37,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         var command = new RegisterBook("978-1-4919-5535-0", "Domain-Driven Design", "Eric Evans", 2);
         await GivenRegisteredBook(command);
 
-        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle(
-            command,
-            CancellationToken.None
-        );
+        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
+            (command, CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
         Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 409));
@@ -56,10 +50,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         await GivenRegistrationClosed();
         var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
 
-        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle(
-            command,
-            CancellationToken.None
-        );
+        Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
+            (command, CancellationToken.None);
 
         Assert.That(result.IsSuccess, Is.False);
         Assert.That(result.Errors, Has.Some.Matches<Error>(error => error is { Field: null, StatusCode: 400 }));

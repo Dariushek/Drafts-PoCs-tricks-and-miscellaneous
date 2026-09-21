@@ -6,12 +6,12 @@ namespace BusinessLogicModule.Persistence;
 internal sealed class EfBookRepository(BooksDbContext db): IBookRepository
 {
     public Task<BookRegistrationWindow> GetRegistrationWindowAsync
-        (CancellationToken cancellationToken) =>
-        db.RegistrationWindow.SingleAsync(cancellationToken);
+        (CancellationToken cancellationToken)
+        => db.RegistrationWindow.SingleAsync(cancellationToken);
 
     public Task SaveRegistrationWindowAsync
-        (BookRegistrationWindow window, CancellationToken cancellationToken) =>
-        db.SaveChangesAsync(cancellationToken);
+        (BookRegistrationWindow window, CancellationToken cancellationToken)
+        => db.SaveChangesAsync(cancellationToken);
 
     public Task<bool> IsIsbnRegisteredAsync(string isbn, CancellationToken cancellationToken)
     {

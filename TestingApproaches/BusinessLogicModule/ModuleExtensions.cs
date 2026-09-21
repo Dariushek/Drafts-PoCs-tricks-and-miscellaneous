@@ -46,7 +46,8 @@ public static class ModuleExtensions
         ArgumentNullException.ThrowIfNull(configureDbContext);
 
         services.AddDbContext<BooksDbContext>(configureDbContext);
-        services.AddScoped<IBookRepository>(
+        services.AddScoped<IBookRepository>
+        (
             persistenceKind == PersistenceKind.PlainSql
                 ? sp => new PlainSqlBookRepository(sp.GetRequiredService<BooksDbContext>())
                 : sp => new EfBookRepository(sp.GetRequiredService<BooksDbContext>())
@@ -85,17 +86,29 @@ public static class ModuleExtensions
     {
         using IServiceScope scope = services.CreateScope();
 
-        scope.ServiceProvider.GetService<BooksDbContext>()?.Database.EnsureCreated();
+        scope.ServiceProvider
+             .GetService<BooksDbContext>()
+             ?.Database
+             .EnsureCreated();
 
         // Mongo has no schema/HasData equivalent to EnsureCreated - the
         // registration window singleton is seeded explicitly instead.
         // Upsert keeps this idempotent if called more than once.
-        scope.ServiceProvider.GetService<IMongoDatabase>()
+        scope.ServiceProvider
+             .GetService<IMongoDatabase>()
              ?.GetCollection<RegistrationWindowDocument>("registrationWindows")
-             .ReplaceOne(
+             .ReplaceOne
+             (
                  w => w.Id == 1,
-                 new() { Id = 1, IsOpen = true },
-                 new ReplaceOptions { IsUpsert = true }
+                 new()
+                 {
+                     Id = 1,
+                     IsOpen = true
+                 },
+                 new ReplaceOptions
+                 {
+                     IsUpsert = true
+                 }
              );
     }
 

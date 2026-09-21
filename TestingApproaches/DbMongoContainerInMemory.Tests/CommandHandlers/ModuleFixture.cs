@@ -19,7 +19,8 @@ public abstract class ModuleFixture
         var databaseName = $"test_{Guid.NewGuid():N}";
 
         var services = new ServiceCollection();
-        services.AddBusinessLogicModule(
+        services.AddBusinessLogicModule
+        (
             persistenceKind: PersistenceKind.Mongo,
             mongoConnectionString: MongoContainerSetup.ConnectionString,
             mongoDatabaseName: databaseName
@@ -39,12 +40,12 @@ public abstract class ModuleFixture
     public void ModuleFixtureTearDown() { provider.Dispose(); }
 
     protected Task<Result<BookRegistration>> GivenRegisteredBook
-        (RegisterBook command) =>
-        RegisterBookHandler.Handle(command, CancellationToken.None);
+        (RegisterBook command)
+        => RegisterBookHandler.Handle(command, CancellationToken.None);
 
     protected Task GivenRegistrationClosed() => CloseRegistrationHandler.Handle(new(), CancellationToken.None);
 
     protected Task<Result<BookRenting>> GivenRentedBook
-        (Guid bookId) =>
-        RentBookHandler.Handle(new(bookId), CancellationToken.None);
+        (Guid bookId)
+        => RentBookHandler.Handle(new(bookId), CancellationToken.None);
 }
