@@ -3,6 +3,8 @@
         <File Path="..\Agents.md" />
         <File Path="..\CLAUDE.md" />
         <File Path="bench.sh" />
+        <File Path="db-dev.sh" />
+        <File Path="README.md" />
     </Folder>
     <Project Path="BusinessLogicModule/BusinessLogicModule.csproj" />
     <Project Path="DbMockInMemory.Tests/DbMockInMemory.Tests.csproj" />
