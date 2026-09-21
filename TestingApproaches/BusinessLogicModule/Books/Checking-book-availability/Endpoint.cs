@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Routing;
 
 namespace BusinessLogicModule.Books;
 
-internal static class Endpoint
+internal static partial class Endpoint
 {
     public static void MapBookAvailability(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/books/{bookId:guid}/availability", Handle).WithName("BookAvailability");
+        app.MapGet("/books/{bookId:guid}/availability", HandleAvailability).WithName("BookAvailability");
     }
 
-    private static async Task<Results<ProblemHttpResult, Ok<BookAvailability>>> Handle(
+    private static async Task<Results<ProblemHttpResult, Ok<BookAvailability>>> HandleAvailability(
     Guid bookId,
     ICheckBookAvailabilityHandler handler,
     CancellationToken cancellationToken
@@ -22,11 +22,11 @@ internal static class Endpoint
 
         return result.Match<Results<ProblemHttpResult, Ok<BookAvailability>>>(
             value => TypedResults.Ok(value),
-            MapErrors
+            MapAvailabilityErrors
         );
     }
 
-    private static Results<ProblemHttpResult, Ok<BookAvailability>> MapErrors(IReadOnlyList<Error> errors)
+    private static Results<ProblemHttpResult, Ok<BookAvailability>> MapAvailabilityErrors(IReadOnlyList<Error> errors)
     {
         Error first = errors[0];
 

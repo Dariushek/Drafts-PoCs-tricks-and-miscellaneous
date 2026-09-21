@@ -21,7 +21,7 @@ public class ClosingRegistrationTests(PersistenceKind persistenceKind) : WebApiF
     public async Task Closing_registration_prevents_new_books_from_being_registered()
     {
         await GivenRegistrationClosedAsync();
-        var command = new BookRegistrationCommand("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
+        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 

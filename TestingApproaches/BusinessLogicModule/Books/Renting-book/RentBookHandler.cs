@@ -3,27 +3,27 @@ using Microsoft.AspNetCore.Http;
 
 namespace BusinessLogicModule.Books;
 
-public interface IBookRentingHandler
+public interface IRentBookHandler
 {
-    Task<Result<BookRentingResult>> Handle(BookRentingCommand command, CancellationToken cancellationToken);
+    Task<Result<BookRenting>> Handle(RentBook command, CancellationToken cancellationToken);
 }
 
-internal sealed class BookRentingHandler(IBookRepository repository) : IBookRentingHandler
+internal sealed class RentBookHandler(IBookRepository repository) : IRentBookHandler
 {
-    public async Task<Result<BookRentingResult>> Handle(BookRentingCommand command, CancellationToken cancellationToken)
+    public async Task<Result<BookRenting>> Handle(RentBook command, CancellationToken cancellationToken)
     {
         Book? book = await repository.GetByIdAsync(command.BookId, cancellationToken);
 
         if (book is null)
         {
-            return Result<BookRentingResult>.Failure(
+            return Result<BookRenting>.Failure(
                 new Error("BookNotFound", $"No book found with id '{command.BookId}'.", StatusCode: StatusCodes.Status404NotFound)
             );
         }
 
         if (!book.IsAvailableToRent)
         {
-            return Result<BookRentingResult>.Failure(
+            return Result<BookRenting>.Failure(
                 new Error("BookOutOfStock", $"Book '{book.Title}' has no copies available to rent.", StatusCode: StatusCodes.Status409Conflict)
             );
         }
@@ -31,6 +31,6 @@ internal sealed class BookRentingHandler(IBookRepository repository) : IBookRent
         book.Rent();
         await repository.SaveAsync(book, cancellationToken);
 
-        return Result<BookRentingResult>.Success(new BookRentingResult(book.Id, book.CopiesAvailable));
+        return Result<BookRenting>.Success(new BookRenting(book.Id, book.CopiesAvailable));
     }
 }

@@ -9,10 +9,10 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
 {
     private ServiceProvider provider = null!;
 
-    protected IBookRegistrationHandler BookRegistrationHandler { get; private set; } = null!;
-    protected IClosingRegistrationHandler ClosingRegistrationHandler { get; private set; } = null!;
+    protected IRegisterBookHandler RegisterBookHandler { get; private set; } = null!;
+    protected ICloseRegistrationHandler CloseRegistrationHandler { get; private set; } = null!;
     protected ICheckBookAvailabilityHandler CheckBookAvailabilityHandler { get; private set; } = null!;
-    protected IBookRentingHandler BookRentingHandler { get; private set; } = null!;
+    protected IRentBookHandler RentBookHandler { get; private set; } = null!;
 
     [SetUp]
     public void ModuleFixtureSetUp()
@@ -27,10 +27,10 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
 
         provider.InitializeBusinessLogicModuleDatabase();
 
-        BookRegistrationHandler = provider.GetRequiredService<IBookRegistrationHandler>();
-        ClosingRegistrationHandler = provider.GetRequiredService<IClosingRegistrationHandler>();
+        RegisterBookHandler = provider.GetRequiredService<IRegisterBookHandler>();
+        CloseRegistrationHandler = provider.GetRequiredService<ICloseRegistrationHandler>();
         CheckBookAvailabilityHandler = provider.GetRequiredService<ICheckBookAvailabilityHandler>();
-        BookRentingHandler = provider.GetRequiredService<IBookRentingHandler>();
+        RentBookHandler = provider.GetRequiredService<IRentBookHandler>();
     }
 
     [TearDown]
@@ -39,18 +39,18 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
         provider.Dispose();
     }
 
-    protected Task<Result<BookRegistrationResult>> GivenRegisteredBook(BookRegistrationCommand command)
+    protected Task<Result<BookRegistration>> GivenRegisteredBook(RegisterBook command)
     {
-        return BookRegistrationHandler.Handle(command, CancellationToken.None);
+        return RegisterBookHandler.Handle(command, CancellationToken.None);
     }
 
     protected Task GivenRegistrationClosed()
     {
-        return ClosingRegistrationHandler.Handle(new ClosingRegistrationCommand(), CancellationToken.None);
+        return CloseRegistrationHandler.Handle(new CloseRegistration(), CancellationToken.None);
     }
 
-    protected Task<Result<BookRentingResult>> GivenRentedBook(Guid bookId)
+    protected Task<Result<BookRenting>> GivenRentedBook(Guid bookId)
     {
-        return BookRentingHandler.Handle(new BookRentingCommand(bookId), CancellationToken.None);
+        return RentBookHandler.Handle(new RentBook(bookId), CancellationToken.None);
     }
 }

@@ -5,28 +5,28 @@ using Microsoft.AspNetCore.Routing;
 
 namespace BusinessLogicModule.Books;
 
-internal static class BookRegistration
+internal static partial class Endpoint
 {
     public static void MapBookRegistration(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/books", Handle).WithName("BookRegistration");
+        app.MapPost("/books", HandleRegistration).WithName("BookRegistration");
     }
 
-    private static async Task<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistrationResult>>> Handle(
-    BookRegistrationCommand command,
-    IBookRegistrationHandler handler,
+    private static async Task<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>>> HandleRegistration(
+    RegisterBook command,
+    IRegisterBookHandler handler,
     CancellationToken cancellationToken
     )
     {
-        Result<BookRegistrationResult> result = await handler.Handle(command, cancellationToken);
+        Result<BookRegistration> result = await handler.Handle(command, cancellationToken);
 
-        return result.Match<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistrationResult>>>(
+        return result.Match<Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>>>(
             value => TypedResults.Created($"/books/{value.BookId}", value),
-            MapErrors
+            MapRegistrationErrors
         );
     }
 
-    private static Results<ValidationProblem, ProblemHttpResult, Created<BookRegistrationResult>> MapErrors(IReadOnlyList<Error> errors)
+    private static Results<ValidationProblem, ProblemHttpResult, Created<BookRegistration>> MapRegistrationErrors(IReadOnlyList<Error> errors)
     {
         if (errors[0].Field is not null)
         {

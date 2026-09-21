@@ -37,7 +37,7 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
         Factory.Dispose();
     }
 
-    protected Task<HttpResponseMessage> GivenRegisteredBookAsync(BookRegistrationCommand command)
+    protected Task<HttpResponseMessage> GivenRegisteredBookAsync(RegisterBook command)
     {
         return Client.PostAsJsonAsync("/books", command);
     }
@@ -47,10 +47,10 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
         return Client.PostAsync("/books/registration/close", null);
     }
 
-    protected async Task<Guid> GivenRegisteredBookIdAsync(BookRegistrationCommand command)
+    protected async Task<Guid> GivenRegisteredBookIdAsync(RegisterBook command)
     {
         HttpResponseMessage response = await GivenRegisteredBookAsync(command);
-        var result = await response.Content.ReadFromJsonAsync<BookRegistrationResult>();
+        var result = await response.Content.ReadFromJsonAsync<BookRegistration>();
 
         return result!.BookId;
     }

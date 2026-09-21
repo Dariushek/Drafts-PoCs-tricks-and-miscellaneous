@@ -3,27 +3,27 @@ using Microsoft.AspNetCore.Http;
 
 namespace BusinessLogicModule.Books;
 
-public interface IBookRegistrationHandler
+public interface IRegisterBookHandler
 {
-    Task<Result<BookRegistrationResult>> Handle(BookRegistrationCommand command, CancellationToken cancellationToken);
+    Task<Result<BookRegistration>> Handle(RegisterBook command, CancellationToken cancellationToken);
 }
 
-internal sealed class BookRegistrationHandler(IBookRepository repository): IBookRegistrationHandler
+internal sealed class RegisterBookHandler(IBookRepository repository): IRegisterBookHandler
 {
-    public async Task<Result<BookRegistrationResult>> Handle(BookRegistrationCommand command, CancellationToken cancellationToken)
+    public async Task<Result<BookRegistration>> Handle(RegisterBook command, CancellationToken cancellationToken)
     {
         BookRegistrationWindow window = await repository.GetRegistrationWindowAsync(cancellationToken);
 
         if (!window.IsOpen)
         {
-            return Result<BookRegistrationResult>.Failure(
+            return Result<BookRegistration>.Failure(
                 new Error("RegistrationClosed", "Book registration is currently closed.", StatusCode: StatusCodes.Status400BadRequest)
             );
         }
 
         if (command.CopiesAvailable < 0)
         {
-            return Result<BookRegistrationResult>.Failure(
+            return Result<BookRegistration>.Failure(
                 new Error("CopiesAvailable", "Must be zero or greater.", "CopiesAvailable")
             );
         }
@@ -32,7 +32,7 @@ internal sealed class BookRegistrationHandler(IBookRepository repository): IBook
 
         if (isbnRegistered)
         {
-            return Result<BookRegistrationResult>.Failure(
+            return Result<BookRegistration>.Failure(
                 new Error("IsbnAlreadyRegistered", $"A book with ISBN '{command.Isbn}' is already registered.", StatusCode: StatusCodes.Status409Conflict)
             );
         }
@@ -41,6 +41,6 @@ internal sealed class BookRegistrationHandler(IBookRepository repository): IBook
 
         await repository.AddAsync(book, cancellationToken);
 
-        return Result<BookRegistrationResult>.Success(new BookRegistrationResult(book.Id));
+        return Result<BookRegistration>.Success(new BookRegistration(book.Id));
     }
 }

@@ -13,13 +13,13 @@ public class BookRegistrationTests(PersistenceKind persistenceKind) : WebApiFixt
     [Test]
     public async Task Book_registration_registers_book()
     {
-        var command = new BookRegistrationCommand("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
+        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
 
-        var result = await response.Content.ReadFromJsonAsync<BookRegistrationResult>();
+        var result = await response.Content.ReadFromJsonAsync<BookRegistration>();
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.BookId, Is.Not.EqualTo(Guid.Empty));
     }
@@ -27,7 +27,7 @@ public class BookRegistrationTests(PersistenceKind persistenceKind) : WebApiFixt
     [Test]
     public async Task Book_with_negative_copies_available_cannot_be_registered()
     {
-        var command = new BookRegistrationCommand("978-0-13-468599-1", "Clean Code", "Robert C. Martin", -1);
+        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", -1);
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 
@@ -41,7 +41,7 @@ public class BookRegistrationTests(PersistenceKind persistenceKind) : WebApiFixt
     [Test]
     public async Task Book_with_duplicate_isbn_cannot_be_registered()
     {
-        var command = new BookRegistrationCommand("978-1-4919-5535-0", "Domain-Driven Design", "Eric Evans", 2);
+        var command = new RegisterBook("978-1-4919-5535-0", "Domain-Driven Design", "Eric Evans", 2);
         await GivenRegisteredBookAsync(command);
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
@@ -57,7 +57,7 @@ public class BookRegistrationTests(PersistenceKind persistenceKind) : WebApiFixt
     public async Task Book_cannot_be_registered_when_registration_is_closed()
     {
         await GivenRegistrationClosedAsync();
-        var command = new BookRegistrationCommand("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
+        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 

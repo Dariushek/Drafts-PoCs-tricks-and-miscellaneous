@@ -5,28 +5,28 @@ using Microsoft.AspNetCore.Routing;
 
 namespace BusinessLogicModule.Books;
 
-internal static class BookRenting
+internal static partial class Endpoint
 {
     public static void MapBookRenting(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/books/{bookId:guid}/rent", Handle).WithName("BookRenting");
+        app.MapPost("/books/{bookId:guid}/rent", HandleRenting).WithName("BookRenting");
     }
 
-    private static async Task<Results<ProblemHttpResult, Ok<BookRentingResult>>> Handle(
+    private static async Task<Results<ProblemHttpResult, Ok<BookRenting>>> HandleRenting(
     Guid bookId,
-    IBookRentingHandler handler,
+    IRentBookHandler handler,
     CancellationToken cancellationToken
     )
     {
-        Result<BookRentingResult> result = await handler.Handle(new BookRentingCommand(bookId), cancellationToken);
+        Result<BookRenting> result = await handler.Handle(new RentBook(bookId), cancellationToken);
 
-        return result.Match<Results<ProblemHttpResult, Ok<BookRentingResult>>>(
+        return result.Match<Results<ProblemHttpResult, Ok<BookRenting>>>(
             value => TypedResults.Ok(value),
-            MapErrors
+            MapRentingErrors
         );
     }
 
-    private static Results<ProblemHttpResult, Ok<BookRentingResult>> MapErrors(IReadOnlyList<Error> errors)
+    private static Results<ProblemHttpResult, Ok<BookRenting>> MapRentingErrors(IReadOnlyList<Error> errors)
     {
         Error first = errors[0];
 

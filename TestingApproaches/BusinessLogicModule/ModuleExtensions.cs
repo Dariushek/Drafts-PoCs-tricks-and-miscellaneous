@@ -44,10 +44,10 @@ public static class ModuleExtensions
         services.RemoveAll<IDbContextOptionsConfiguration<BooksDbContext>>();
         services.RemoveAll<BooksDbContext>();
         services.RemoveAll<IBookRepository>();
-        services.RemoveAll<IBookRegistrationHandler>();
-        services.RemoveAll<IClosingRegistrationHandler>();
+        services.RemoveAll<IRegisterBookHandler>();
+        services.RemoveAll<ICloseRegistrationHandler>();
         services.RemoveAll<ICheckBookAvailabilityHandler>();
-        services.RemoveAll<IBookRentingHandler>();
+        services.RemoveAll<IRentBookHandler>();
 
         return services;
     }
@@ -69,10 +69,10 @@ public static class ModuleExtensions
 
     private static IServiceCollection AddBookHandlers(this IServiceCollection services)
     {
-        services.AddTransient<IBookRegistrationHandler, BookRegistrationHandler>();
-        services.AddTransient<IClosingRegistrationHandler, ClosingRegistrationHandler>();
+        services.AddTransient<IRegisterBookHandler, RegisterBookHandler>();
+        services.AddTransient<ICloseRegistrationHandler, CloseRegistrationHandler>();
         services.AddTransient<ICheckBookAvailabilityHandler, CheckBookAvailabilityHandler>();
-        services.AddTransient<IBookRentingHandler, BookRentingHandler>();
+        services.AddTransient<IRentBookHandler, RentBookHandler>();
 
         return services;
     }

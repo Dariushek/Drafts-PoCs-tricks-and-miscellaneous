@@ -12,7 +12,7 @@ public class EndpointTests(PersistenceKind persistenceKind) : WebApiFixture(pers
     [Test]
     public async Task Book_with_copies_available_is_available_to_rent()
     {
-        var command = new BookRegistrationCommand("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
+        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
         Guid bookId = await GivenRegisteredBookIdAsync(command);
 
         HttpResponseMessage response = await Client.GetAsync($"/books/{bookId}/availability");
@@ -28,7 +28,7 @@ public class EndpointTests(PersistenceKind persistenceKind) : WebApiFixture(pers
     [Test]
     public async Task Book_with_no_copies_left_is_not_available_to_rent()
     {
-        var command = new BookRegistrationCommand("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 1);
+        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 1);
         Guid bookId = await GivenRegisteredBookIdAsync(command);
         await GivenRentedBookAsync(bookId);
 

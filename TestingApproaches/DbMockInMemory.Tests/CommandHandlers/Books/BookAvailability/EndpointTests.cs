@@ -10,8 +10,8 @@ public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(pers
     [Test]
     public async Task Book_with_copies_available_is_available_to_rent()
     {
-        var command = new BookRegistrationCommand("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
-        Result<BookRegistrationResult> registered = await GivenRegisteredBook(command);
+        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
+        Result<BusinessLogicModule.Books.BookRegistration> registered = await GivenRegisteredBook(command);
 
         Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle(
             new BusinessLogicModule.Books.CheckBookAvailability(registered.Value.BookId), CancellationToken.None
@@ -25,8 +25,8 @@ public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(pers
     [Test]
     public async Task Book_with_no_copies_left_is_not_available_to_rent()
     {
-        var command = new BookRegistrationCommand("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 1);
-        Result<BookRegistrationResult> registered = await GivenRegisteredBook(command);
+        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 1);
+        Result<BusinessLogicModule.Books.BookRegistration> registered = await GivenRegisteredBook(command);
         await GivenRentedBook(registered.Value.BookId);
 
         Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle(
