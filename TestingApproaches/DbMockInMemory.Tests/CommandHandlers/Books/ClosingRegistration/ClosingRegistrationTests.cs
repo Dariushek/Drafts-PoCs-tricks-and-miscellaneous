@@ -3,9 +3,9 @@ using BusinessLogicModule.Books;
 
 namespace DbMockInMemory.Tests.CommandHandlers.Books.ClosingRegistration;
 
-[TestFixture(RepositoryKind.Ef)]
-[TestFixture(RepositoryKind.Fake)]
-public class ClosingRegistrationTests(RepositoryKind repositoryKind) : ModuleFixture(repositoryKind)
+[TestFixture(PersistenceKind.Ef)]
+[TestFixture(PersistenceKind.Fake)]
+public class ClosingRegistrationTests(PersistenceKind persistenceKind) : ModuleFixture(persistenceKind)
 {
     [Test]
     public async Task Closing_registration_prevents_new_books_from_being_registered()

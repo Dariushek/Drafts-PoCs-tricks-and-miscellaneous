@@ -3,9 +3,9 @@ using BusinessLogicModule.Books;
 
 namespace DbMockInMemory.Tests.CommandHandlers.Books.BookRenting;
 
-[TestFixture(RepositoryKind.Ef)]
-[TestFixture(RepositoryKind.Fake)]
-public class BookRentingTests(RepositoryKind repositoryKind) : ModuleFixture(repositoryKind)
+[TestFixture(PersistenceKind.Ef)]
+[TestFixture(PersistenceKind.Fake)]
+public class BookRentingTests(PersistenceKind persistenceKind) : ModuleFixture(persistenceKind)
 {
     [Test]
     public async Task Renting_a_book_decreases_copies_available()

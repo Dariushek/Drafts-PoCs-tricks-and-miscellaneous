@@ -1,12 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
+using BusinessLogicModule;
 using BusinessLogicModule.Books;
 
 namespace DbSqlContainerInMemory.Tests.WebApi.Books;
 
-[TestFixture(RepositoryKind.Ef)]
-[TestFixture(RepositoryKind.PlainSql)]
-public class BookAvailabilityTests(RepositoryKind repositoryKind) : WebApiFixture(repositoryKind)
+[TestFixture(PersistenceKind.Ef)]
+[TestFixture(PersistenceKind.PlainSql)]
+public class BookAvailabilityTests(PersistenceKind persistenceKind) : WebApiFixture(persistenceKind)
 {
     [Test]
     public async Task Book_with_copies_available_is_available_to_rent()

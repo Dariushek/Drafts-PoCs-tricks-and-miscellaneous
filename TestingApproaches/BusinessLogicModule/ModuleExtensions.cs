@@ -10,37 +10,34 @@ namespace BusinessLogicModule;
 
 public static class ModuleExtensions
 {
-    public static IServiceCollection AddBusinessLogicModule(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDbContext)
+    // configureDbContext is required for Ef/PlainSql (both still use EF for
+    // schema - see PlainSqlBookRepository for why) and ignored for Fake.
+    // persistenceKind defaults to Ef, so production call sites (Program.cs)
+    // don't need to change to pick up PlainSql/Fake becoming available.
+    public static IServiceCollection AddBusinessLogicModule(
+        this IServiceCollection services,
+        Action<DbContextOptionsBuilder>? configureDbContext = null,
+        PersistenceKind persistenceKind = PersistenceKind.Ef)
     {
+        if (persistenceKind == PersistenceKind.Fake)
+        {
+            services.AddSingleton<IBookRepository, InMemoryFakeBookRepository>();
+            return services.AddBookHandlers();
+        }
+
+        ArgumentNullException.ThrowIfNull(configureDbContext);
+
         services.AddDbContext<BooksDbContext>(configureDbContext);
-        services.AddScoped<IBookRepository, EfBookRepository>();
+        services.AddScoped<IBookRepository>(persistenceKind == PersistenceKind.PlainSql
+            ? sp => new PlainSqlBookRepository(sp.GetRequiredService<BooksDbContext>())
+            : sp => new EfBookRepository(sp.GetRequiredService<BooksDbContext>()));
 
         return services.AddBookHandlers();
     }
 
-    // Raw ADO.NET against SQL Server, no EF involved for reads/writes. Schema
-    // is still provisioned via EF (InitializeBusinessLogicModuleDatabase), so
-    // it stays in one place - see PlainSqlBookRepository for why.
-    public static IServiceCollection AddBusinessLogicModuleWithPlainSql(this IServiceCollection services, string connectionString, Action<DbContextOptionsBuilder> configureSchemaContext)
-    {
-        services.AddDbContext<BooksDbContext>(configureSchemaContext);
-        services.AddScoped<IBookRepository>(_ => new PlainSqlBookRepository(connectionString));
-
-        return services.AddBookHandlers();
-    }
-
-    // Hand-rolled fake, no database at all - the "don't hit anything real"
-    // counterpart to the EF InMemory provider.
-    public static IServiceCollection AddBusinessLogicModuleWithFakeRepository(this IServiceCollection services)
-    {
-        services.AddSingleton<IBookRepository, InMemoryFakeBookRepository>();
-
-        return services.AddBookHandlers();
-    }
-
-    // Undoes whichever AddBusinessLogicModule* above was already applied
-    // (e.g. by Program.cs, inside a WebApplicationFactory) so a test can pick
-    // a different persistence approach for the same handlers.
+    // Undoes an earlier AddBusinessLogicModule call (e.g. Program.cs's,
+    // inside a WebApplicationFactory) so a test can pick a different
+    // persistence approach for the same handlers.
     public static IServiceCollection RemoveBusinessLogicModule(this IServiceCollection services)
     {
         services.RemoveAll<DbContextOptions<BooksDbContext>>();

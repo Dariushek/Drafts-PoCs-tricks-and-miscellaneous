@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DbMockInMemory.Tests.WebApi;
 
-public abstract class WebApiFixture(RepositoryKind repositoryKind)
+public abstract class WebApiFixture(PersistenceKind persistenceKind)
 {
     private WebApplicationFactory<Program> Factory { get; set; } = null!;
     protected HttpClient Client { get; private set; } = null!;
@@ -22,13 +22,13 @@ public abstract class WebApiFixture(RepositoryKind repositoryKind)
             {
                 services.RemoveBusinessLogicModule();
 
-                if (repositoryKind == RepositoryKind.Ef)
+                if (persistenceKind == PersistenceKind.Ef)
                 {
-                    services.AddBusinessLogicModule(options => options.UseInMemoryDatabase(databaseName, InMemoryRoot.Instance));
+                    services.AddBusinessLogicModule(options => options.UseInMemoryDatabase(databaseName, InMemoryRoot.Instance), persistenceKind);
                 }
                 else
                 {
-                    services.AddBusinessLogicModuleWithFakeRepository();
+                    services.AddBusinessLogicModule(persistenceKind: persistenceKind);
                 }
             })
         );

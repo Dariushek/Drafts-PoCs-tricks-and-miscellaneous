@@ -1,13 +1,14 @@
 using System.Net;
 using System.Net.Http.Json;
+using BusinessLogicModule;
 using BusinessLogicModule.Books;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DbMockInMemory.Tests.WebApi.Books;
 
-[TestFixture(RepositoryKind.Ef)]
-[TestFixture(RepositoryKind.Fake)]
-public class BookRegistrationTests(RepositoryKind repositoryKind) : WebApiFixture(repositoryKind)
+[TestFixture(PersistenceKind.Ef)]
+[TestFixture(PersistenceKind.Fake)]
+public class BookRegistrationTests(PersistenceKind persistenceKind) : WebApiFixture(persistenceKind)
 {
     [Test]
     public async Task Book_registration_registers_book()

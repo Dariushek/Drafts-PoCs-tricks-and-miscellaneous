@@ -6,14 +6,17 @@ Compares two ways of testing against a database: in-memory EF Core provider
 
 Each of those is further split by persistence implementation, via
 `BusinessLogicModule`'s `IBookRepository` abstraction (see
-`BusinessLogicModule/Persistence/`):
+`BusinessLogicModule/Persistence/`) and a single, parameterized
+`AddBusinessLogicModule(configureDbContext, persistenceKind: PersistenceKind.Ef)`
+extension method (`PersistenceKind` defaults to `Ef`, so `Program.cs`'s
+production call site is untouched):
 
-| Project                       | `RepositoryKind.Ef` | second variant                    |
+| Project                       | `PersistenceKind.Ef` | second variant                    |
 |--------------------------------|----------------------|------------------------------------|
-| `DbMockInMemory.Tests`         | EF InMemory provider | `RepositoryKind.Fake` — hand-rolled in-memory dictionary, no EF at all |
-| `DbSqlContainerInMemory.Tests` | EF Core + SQL Server  | `RepositoryKind.PlainSql` — raw ADO.NET (`Microsoft.Data.SqlClient`) against the same SQL Server |
+| `DbMockInMemory.Tests`         | EF InMemory provider | `PersistenceKind.Fake` — hand-rolled in-memory dictionary, no EF at all |
+| `DbSqlContainerInMemory.Tests` | EF Core + SQL Server  | `PersistenceKind.PlainSql` — raw ADO.NET (`Microsoft.Data.SqlClient`) against the same SQL Server |
 
-Every test class carries both `[TestFixture(RepositoryKind...)]` variants and
+Every test class carries both `[TestFixture(PersistenceKind...)]` variants and
 runs its bodies against each — same assertions, different persistence code
 underneath.
 

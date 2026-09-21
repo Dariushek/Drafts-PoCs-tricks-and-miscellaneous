@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DbSqlContainerInMemory.Tests.WebApi;
 
-public abstract class WebApiFixture(RepositoryKind repositoryKind)
+public abstract class WebApiFixture(PersistenceKind persistenceKind)
 {
     private WebApplicationFactory<Program> Factory { get; set; } = null!;
     protected HttpClient Client { get; private set; } = null!;
@@ -22,15 +22,7 @@ public abstract class WebApiFixture(RepositoryKind repositoryKind)
             builder.ConfigureServices(services =>
             {
                 services.RemoveBusinessLogicModule();
-
-                if (repositoryKind == RepositoryKind.Ef)
-                {
-                    services.AddBusinessLogicModule(options => options.UseSqlServer(connectionString));
-                }
-                else
-                {
-                    services.AddBusinessLogicModuleWithPlainSql(connectionString, options => options.UseSqlServer(connectionString));
-                }
+                services.AddBusinessLogicModule(options => options.UseSqlServer(connectionString), persistenceKind);
             })
         );
 

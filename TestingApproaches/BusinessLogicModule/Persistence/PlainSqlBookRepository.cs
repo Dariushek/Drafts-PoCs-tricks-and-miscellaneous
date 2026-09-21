@@ -1,13 +1,20 @@
 using BusinessLogicModule.Books;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 
 namespace BusinessLogicModule.Persistence;
 
 // Table/column names match the EF model's default conventions (see
 // BooksDbContext) since schema provisioning is still done via EF's
-// Database.EnsureCreated() - only reads/writes bypass EF here.
-internal sealed class PlainSqlBookRepository(string connectionString) : IBookRepository
+// Database.EnsureCreated() - only reads/writes bypass EF here. The
+// connection string is read off that same (schema-only) BooksDbContext
+// rather than passed separately, so both repository kinds share one
+// AddBusinessLogicModule wiring.
+internal sealed class PlainSqlBookRepository(BooksDbContext db) : IBookRepository
 {
+    private readonly string connectionString = db.Database.GetConnectionString()!;
+
+
     public async Task<BookRegistrationWindow> GetRegistrationWindowAsync(CancellationToken cancellationToken)
     {
         await using SqlConnection connection = await OpenConnectionAsync(cancellationToken);

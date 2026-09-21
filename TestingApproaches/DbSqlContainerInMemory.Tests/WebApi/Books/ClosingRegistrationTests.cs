@@ -1,12 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
+using BusinessLogicModule;
 using BusinessLogicModule.Books;
 
 namespace DbSqlContainerInMemory.Tests.WebApi.Books;
 
-[TestFixture(RepositoryKind.Ef)]
-[TestFixture(RepositoryKind.PlainSql)]
-public class ClosingRegistrationTests(RepositoryKind repositoryKind) : WebApiFixture(repositoryKind)
+[TestFixture(PersistenceKind.Ef)]
+[TestFixture(PersistenceKind.PlainSql)]
+public class ClosingRegistrationTests(PersistenceKind persistenceKind) : WebApiFixture(persistenceKind)
 {
     [Test]
     public async Task Closing_registration_returns_no_content()
