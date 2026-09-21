@@ -7,6 +7,7 @@ RESULTS="$SCRIPT_DIR/bench-results"
 declare -A PROJECTS=(
     [DbMockInMemory]="$SCRIPT_DIR/DbMockInMemory.Tests/DbMockInMemory.Tests.csproj"
     [DbSqlContainerInMemory]="$SCRIPT_DIR/DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj"
+    [DbMongoContainerInMemory]="$SCRIPT_DIR/DbMongoContainerInMemory.Tests/DbMongoContainerInMemory.Tests.csproj"
 )
 
 run() {

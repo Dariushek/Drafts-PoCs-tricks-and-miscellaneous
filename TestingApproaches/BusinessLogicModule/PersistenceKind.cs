@@ -4,5 +4,6 @@ public enum PersistenceKind
 {
     Ef,
     PlainSql,
-    Fake
+    Fake,
+    Mongo
 }
