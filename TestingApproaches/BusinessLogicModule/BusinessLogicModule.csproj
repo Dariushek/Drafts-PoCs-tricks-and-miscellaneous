@@ -17,4 +17,10 @@
         <PackageReference Include="MongoDB.Driver" Version="3.11.2"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- Keeps the ReSharper/Rider settings in effect and tracked in git,
+             just out of the Solution Explorer / project tree. -->
+        <None Include="BusinessLogicModule.csproj.DotSettings" Visible="false"/>
+    </ItemGroup>
+
 </Project>
