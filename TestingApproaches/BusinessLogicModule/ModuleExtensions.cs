@@ -46,7 +46,7 @@ public static class ModuleExtensions
         services.RemoveAll<IBookRepository>();
         services.RemoveAll<IBookRegistrationHandler>();
         services.RemoveAll<IClosingRegistrationHandler>();
-        services.RemoveAll<IBookAvailabilityHandler>();
+        services.RemoveAll<ICheckBookAvailabilityHandler>();
         services.RemoveAll<IBookRentingHandler>();
 
         return services;
@@ -71,7 +71,7 @@ public static class ModuleExtensions
     {
         services.AddTransient<IBookRegistrationHandler, BookRegistrationHandler>();
         services.AddTransient<IClosingRegistrationHandler, ClosingRegistrationHandler>();
-        services.AddTransient<IBookAvailabilityHandler, BookAvailabilityHandler>();
+        services.AddTransient<ICheckBookAvailabilityHandler, CheckBookAvailabilityHandler>();
         services.AddTransient<IBookRentingHandler, BookRentingHandler>();
 
         return services;

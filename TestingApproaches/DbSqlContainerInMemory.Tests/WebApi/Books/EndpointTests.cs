@@ -3,11 +3,11 @@ using System.Net.Http.Json;
 using BusinessLogicModule;
 using BusinessLogicModule.Books;
 
-namespace DbMockInMemory.Tests.WebApi.Books;
+namespace DbSqlContainerInMemory.Tests.WebApi.Books;
 
 [TestFixture(PersistenceKind.Ef)]
-[TestFixture(PersistenceKind.Fake)]
-public class BookAvailabilityTests(PersistenceKind persistenceKind) : WebApiFixture(persistenceKind)
+[TestFixture(PersistenceKind.PlainSql)]
+public class EndpointTests(PersistenceKind persistenceKind) : WebApiFixture(persistenceKind)
 {
     [Test]
     public async Task Book_with_copies_available_is_available_to_rent()
@@ -19,7 +19,7 @@ public class BookAvailabilityTests(PersistenceKind persistenceKind) : WebApiFixt
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-        var result = await response.Content.ReadFromJsonAsync<BookAvailabilityResult>();
+        var result = await response.Content.ReadFromJsonAsync<BookAvailability>();
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.IsAvailable, Is.True);
         Assert.That(result.CopiesAvailable, Is.EqualTo(3));
@@ -34,7 +34,7 @@ public class BookAvailabilityTests(PersistenceKind persistenceKind) : WebApiFixt
 
         HttpResponseMessage response = await Client.GetAsync($"/books/{bookId}/availability");
 
-        var result = await response.Content.ReadFromJsonAsync<BookAvailabilityResult>();
+        var result = await response.Content.ReadFromJsonAsync<BookAvailability>();
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.IsAvailable, Is.False);
         Assert.That(result.CopiesAvailable, Is.EqualTo(0));

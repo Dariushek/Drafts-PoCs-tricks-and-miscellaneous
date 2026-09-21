@@ -5,7 +5,7 @@ namespace DbSqlContainerInMemory.Tests.CommandHandlers.Books.BookAvailability;
 
 [TestFixture(PersistenceKind.Ef)]
 [TestFixture(PersistenceKind.PlainSql)]
-public class BookAvailabilityTests(PersistenceKind persistenceKind) : ModuleFixture(persistenceKind)
+public class EndpointTests(PersistenceKind persistenceKind) : ModuleFixture(persistenceKind)
 {
     [Test]
     public async Task Book_with_copies_available_is_available_to_rent()
@@ -13,8 +13,8 @@ public class BookAvailabilityTests(PersistenceKind persistenceKind) : ModuleFixt
         var command = new BookRegistrationCommand("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 3);
         Result<BookRegistrationResult> registered = await GivenRegisteredBook(command);
 
-        Result<BookAvailabilityResult> result = await BookAvailabilityHandler.Handle(
-            new BookAvailabilityQuery(registered.Value.BookId), CancellationToken.None
+        Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle(
+            new BusinessLogicModule.Books.CheckBookAvailability(registered.Value.BookId), CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.True);
@@ -29,8 +29,8 @@ public class BookAvailabilityTests(PersistenceKind persistenceKind) : ModuleFixt
         Result<BookRegistrationResult> registered = await GivenRegisteredBook(command);
         await GivenRentedBook(registered.Value.BookId);
 
-        Result<BookAvailabilityResult> result = await BookAvailabilityHandler.Handle(
-            new BookAvailabilityQuery(registered.Value.BookId), CancellationToken.None
+        Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle(
+            new BusinessLogicModule.Books.CheckBookAvailability(registered.Value.BookId), CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.True);
@@ -41,8 +41,8 @@ public class BookAvailabilityTests(PersistenceKind persistenceKind) : ModuleFixt
     [Test]
     public async Task Checking_availability_of_unknown_book_fails()
     {
-        Result<BookAvailabilityResult> result = await BookAvailabilityHandler.Handle(
-            new BookAvailabilityQuery(Guid.NewGuid()), CancellationToken.None
+        Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle(
+            new BusinessLogicModule.Books.CheckBookAvailability(Guid.NewGuid()), CancellationToken.None
         );
 
         Assert.That(result.IsSuccess, Is.False);

@@ -11,7 +11,7 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
 
     protected IBookRegistrationHandler BookRegistrationHandler { get; private set; } = null!;
     protected IClosingRegistrationHandler ClosingRegistrationHandler { get; private set; } = null!;
-    protected IBookAvailabilityHandler BookAvailabilityHandler { get; private set; } = null!;
+    protected ICheckBookAvailabilityHandler CheckBookAvailabilityHandler { get; private set; } = null!;
     protected IBookRentingHandler BookRentingHandler { get; private set; } = null!;
 
     [SetUp]
@@ -29,7 +29,7 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
 
         BookRegistrationHandler = provider.GetRequiredService<IBookRegistrationHandler>();
         ClosingRegistrationHandler = provider.GetRequiredService<IClosingRegistrationHandler>();
-        BookAvailabilityHandler = provider.GetRequiredService<IBookAvailabilityHandler>();
+        CheckBookAvailabilityHandler = provider.GetRequiredService<ICheckBookAvailabilityHandler>();
         BookRentingHandler = provider.GetRequiredService<IBookRentingHandler>();
     }
 
