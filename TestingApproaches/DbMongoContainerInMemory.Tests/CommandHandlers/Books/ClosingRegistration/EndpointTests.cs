@@ -14,7 +14,7 @@ public class EndpointTests: ModuleFixture
         Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
             (command, CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 400));
+        await Assert.That(result.IsSuccess).IsFalse();
+        await Assert.That(result.Errors).Contains(error => error.StatusCode == 400);
     }
 }

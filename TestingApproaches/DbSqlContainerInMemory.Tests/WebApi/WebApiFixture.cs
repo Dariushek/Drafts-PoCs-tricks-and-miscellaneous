@@ -11,7 +11,7 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
     private WebApplicationFactory<Program> Factory { get; set; } = null!;
     protected HttpClient Client { get; private set; } = null!;
 
-    [SetUp]
+    [Before(Test)]
     public void WebApiFixtureSetUp()
     {
         var databaseName = $"test_{Guid.NewGuid():N}";
@@ -33,7 +33,7 @@ public abstract class WebApiFixture(PersistenceKind persistenceKind)
         Client = Factory.CreateClient();
     }
 
-    [TearDown]
+    [After(Test)]
     public void WebApiFixtureTearDown()
     {
         Client.Dispose();

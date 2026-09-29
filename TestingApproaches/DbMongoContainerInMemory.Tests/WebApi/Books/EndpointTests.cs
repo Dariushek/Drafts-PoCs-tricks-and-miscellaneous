@@ -14,12 +14,12 @@ public class EndpointTests: WebApiFixture
 
         HttpResponseMessage response = await Client.GetAsync($"/books/{bookId}/availability");
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         var result = await response.Content.ReadFromJsonAsync<BookAvailability>();
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.IsAvailable, Is.True);
-        Assert.That(result.CopiesAvailable, Is.EqualTo(3));
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result!.IsAvailable).IsTrue();
+        await Assert.That(result.CopiesAvailable).IsEqualTo(3);
     }
 
     [Test]
@@ -32,9 +32,9 @@ public class EndpointTests: WebApiFixture
         HttpResponseMessage response = await Client.GetAsync($"/books/{bookId}/availability");
 
         var result = await response.Content.ReadFromJsonAsync<BookAvailability>();
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.IsAvailable, Is.False);
-        Assert.That(result.CopiesAvailable, Is.EqualTo(0));
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result!.IsAvailable).IsFalse();
+        await Assert.That(result.CopiesAvailable).IsEqualTo(0);
     }
 
     [Test]
@@ -42,6 +42,6 @@ public class EndpointTests: WebApiFixture
     {
         HttpResponseMessage response = await Client.GetAsync($"/books/{Guid.NewGuid()}/availability");
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }
 }

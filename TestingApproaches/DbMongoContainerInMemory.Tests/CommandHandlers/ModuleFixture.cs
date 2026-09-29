@@ -13,7 +13,7 @@ public abstract class ModuleFixture
     protected ICheckBookAvailabilityHandler CheckBookAvailabilityHandler { get; private set; } = null!;
     protected IRentBookHandler RentBookHandler { get; private set; } = null!;
 
-    [SetUp]
+    [Before(Test)]
     public void ModuleFixtureSetUp()
     {
         var databaseName = $"test_{Guid.NewGuid():N}";
@@ -36,7 +36,7 @@ public abstract class ModuleFixture
         RentBookHandler = provider.GetRequiredService<IRentBookHandler>();
     }
 
-    [TearDown]
+    [After(Test)]
     public void ModuleFixtureTearDown() { provider.Dispose(); }
 
     protected Task<Result<BookRegistration>> GivenRegisteredBook

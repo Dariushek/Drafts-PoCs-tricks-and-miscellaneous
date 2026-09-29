@@ -3,8 +3,8 @@ using BusinessLogicModule.Books;
 
 namespace DbSqlContainerInMemory.Tests.CommandHandlers.Books.ClosingRegistration;
 
-[TestFixture(PersistenceKind.Ef)]
-[TestFixture(PersistenceKind.PlainSql)]
+[Arguments(PersistenceKind.Ef)]
+[Arguments(PersistenceKind.PlainSql)]
 public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persistenceKind)
 {
     [Test]
@@ -16,7 +16,7 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
             (command, CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 400));
+        await Assert.That(result.IsSuccess).IsFalse();
+        await Assert.That(result.Errors).Contains(error => error.StatusCode == 400);
     }
 }

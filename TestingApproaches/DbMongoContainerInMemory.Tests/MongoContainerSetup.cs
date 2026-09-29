@@ -3,7 +3,6 @@ using Testcontainers.MongoDb;
 
 namespace DbMongoContainerInMemory.Tests;
 
-[SetUpFixture]
 public class MongoContainerSetup
 {
     private const string MongoImage = "mongo:6.0";
@@ -22,8 +21,8 @@ public class MongoContainerSetup
 
     public static string ConnectionString { get; private set; } = null!;
 
-    [OneTimeSetUp]
-    public async Task OneTimeSetUp()
+    [Before(Assembly)]
+    public static async Task OneTimeSetUp()
     {
         string persistentConnectionString = BuildConnectionString
             (PersistentHost, PersistentPort, PersistentUsername, PersistentPassword);
@@ -42,8 +41,8 @@ public class MongoContainerSetup
         ConnectionString = ephemeralContainer.GetConnectionString();
     }
 
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
+    [After(Assembly)]
+    public static async Task OneTimeTearDown()
     {
         if (ephemeralContainer is { })
             await ephemeralContainer.DisposeAsync();

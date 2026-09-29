@@ -17,17 +17,17 @@ production call site is untouched):
 | `DbMongoContainerInMemory.Tests` | *(n/a)*              | `PersistenceKind.Mongo` only — `MongoDB.Driver` is already the "no ORM" way of talking to Mongo, so there's no second variant to contrast it against |
 
 Every test class in the two-variant projects carries both
-`[TestFixture(PersistenceKind...)]` attributes and runs its bodies against
+`[Arguments(PersistenceKind...)]` attributes and runs its bodies against
 each — same assertions, different persistence code underneath.
 `DbMongoContainerInMemory.Tests` has only one variant, so its test classes
-skip the `[TestFixture(...)]` parameterization entirely.
+skip the `[Arguments(...)]` parameterization entirely.
 
 ## Run tests
 
 ```bash
-dotnet test DbMockInMemory.Tests/DbMockInMemory.Tests.csproj
-dotnet test DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj
-dotnet test DbMongoContainerInMemory.Tests/DbMongoContainerInMemory.Tests.csproj
+dotnet test --project DbMockInMemory.Tests/DbMockInMemory.Tests.csproj
+dotnet test --project DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj
+dotnet test --project DbMongoContainerInMemory.Tests/DbMongoContainerInMemory.Tests.csproj
 ```
 
 `DbSqlContainerInMemory.Tests` and `DbMongoContainerInMemory.Tests` each
@@ -41,8 +41,8 @@ fresh container each run (~1.7s instead of ~6s).
 
 ```bash
 ./db-dev.sh up       # start once
-dotnet test DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj
-dotnet test DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj  # fast again
+dotnet test --project DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj
+dotnet test --project DbSqlContainerInMemory.Tests/DbSqlContainerInMemory.Tests.csproj  # fast again
 ./db-dev.sh down     # stop when done (or leave it running)
 ./db-dev.sh status   # check state
 ./db-dev.sh clean    # reset: wipe accumulated test databases (see below)
@@ -64,7 +64,7 @@ to an ephemeral Testcontainers-raised one otherwise.
 
 ```bash
 ./db-dev-mongo.sh up       # start once
-dotnet test DbMongoContainerInMemory.Tests/DbMongoContainerInMemory.Tests.csproj
+dotnet test --project DbMongoContainerInMemory.Tests/DbMongoContainerInMemory.Tests.csproj
 ./db-dev-mongo.sh down     # stop when done (or leave it running)
 ./db-dev-mongo.sh status   # check state
 ./db-dev-mongo.sh clean    # reset: wipe accumulated test databases
@@ -98,7 +98,7 @@ projects. `DbSqlContainerInMemory.Tests` and `DbMongoContainerInMemory.Tests`
 each share one server instance (ephemeral or the persistent dev container),
 but every test gets its own database on it:
 
-- Every test's `[SetUp]` generates a unique database name (`test_{Guid.NewGuid():N}`, see `ModuleFixture.cs` / `WebApiFixture.cs`).
+- Every test's `[Before(Test)]` generates a unique database name (`test_{Guid.NewGuid():N}`, see `ModuleFixture.cs` / `WebApiFixture.cs`).
 - The connection string points at that database on the shared server.
 - `Database.EnsureCreated()` (SQL) builds that database's schema fresh
   before the test runs; Mongo has no schema to create, but
@@ -107,7 +107,7 @@ but every test gets its own database on it:
 - This is what makes parallel test execution safe: no two tests ever touch
   the same database.
 
-`[TearDown]` disposes the DB context / `WebApplicationFactory` but does **not** drop the database — dropping per test or in bulk both turned out
+`[After(Test)]` disposes the DB context / `WebApplicationFactory` but does **not** drop the database — dropping per test or in bulk both turned out
 slower/flakier than just leaving it (a stray database is harmless; a 30s
 `ALTER DATABASE` timeout mid-run isn't, and the same logic applies to
 Mongo). Databases accumulate on the persistent containers across runs as a

@@ -5,8 +5,8 @@ using BusinessLogicModule.Books;
 
 namespace DbMockInMemory.Tests.WebApi.Books;
 
-[TestFixture(PersistenceKind.Ef)]
-[TestFixture(PersistenceKind.Fake)]
+[Arguments(PersistenceKind.Ef)]
+[Arguments(PersistenceKind.Fake)]
 public class ClosingRegistrationTests(PersistenceKind persistenceKind): WebApiFixture(persistenceKind)
 {
     [Test]
@@ -14,7 +14,7 @@ public class ClosingRegistrationTests(PersistenceKind persistenceKind): WebApiFi
     {
         HttpResponseMessage response = await Client.PostAsync("/books/registration/close", null);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
     }
 
     [Test]
@@ -25,6 +25,6 @@ public class ClosingRegistrationTests(PersistenceKind persistenceKind): WebApiFi
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
     }
 }

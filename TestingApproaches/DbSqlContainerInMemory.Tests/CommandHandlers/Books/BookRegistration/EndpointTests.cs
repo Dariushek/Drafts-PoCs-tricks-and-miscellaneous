@@ -3,8 +3,8 @@ using BusinessLogicModule.Books;
 
 namespace DbSqlContainerInMemory.Tests.CommandHandlers.Books.BookRegistration;
 
-[TestFixture(PersistenceKind.Ef)]
-[TestFixture(PersistenceKind.PlainSql)]
+[Arguments(PersistenceKind.Ef)]
+[Arguments(PersistenceKind.PlainSql)]
 public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persistenceKind)
 {
     [Test]
@@ -15,8 +15,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
             (command, CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.True);
-        Assert.That(result.Value.BookId, Is.Not.EqualTo(Guid.Empty));
+        await Assert.That(result.IsSuccess).IsTrue();
+        await Assert.That(result.Value.BookId).IsNotEqualTo(Guid.Empty);
     }
 
     [Test]
@@ -27,8 +27,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
             (command, CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error is { Field: "CopiesAvailable" }));
+        await Assert.That(result.IsSuccess).IsFalse();
+        await Assert.That(result.Errors).Contains(error => error is { Field: "CopiesAvailable" });
     }
 
     [Test]
@@ -40,8 +40,8 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
             (command, CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 409));
+        await Assert.That(result.IsSuccess).IsFalse();
+        await Assert.That(result.Errors).Contains(error => error.StatusCode == 409);
     }
 
     [Test]
@@ -53,7 +53,7 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         Result<BusinessLogicModule.Books.BookRegistration> result = await RegisterBookHandler.Handle
             (command, CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error is { Field: null, StatusCode: 400 }));
+        await Assert.That(result.IsSuccess).IsFalse();
+        await Assert.That(result.Errors).Contains(error => error is { Field: null, StatusCode: 400 });
     }
 }

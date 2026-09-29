@@ -14,11 +14,11 @@ public class BookRegistrationTests: WebApiFixture
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 
         var result = await response.Content.ReadFromJsonAsync<BookRegistration>();
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.BookId, Is.Not.EqualTo(Guid.Empty));
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result!.BookId).IsNotEqualTo(Guid.Empty);
     }
 
     [Test]
@@ -28,11 +28,11 @@ public class BookRegistrationTests: WebApiFixture
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
 
         var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
-        Assert.That(problem, Is.Not.Null);
-        Assert.That(problem!.Errors.Keys, Has.Member("CopiesAvailable"));
+        await Assert.That(problem).IsNotNull();
+        await Assert.That(problem!.Errors.Keys).Contains("CopiesAvailable");
     }
 
     [Test]
@@ -43,11 +43,11 @@ public class BookRegistrationTests: WebApiFixture
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Conflict);
 
         var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-        Assert.That(problem, Is.Not.Null);
-        Assert.That(problem!.Status, Is.EqualTo((int)HttpStatusCode.Conflict));
+        await Assert.That(problem).IsNotNull();
+        await Assert.That(problem!.Status).IsEqualTo((int)HttpStatusCode.Conflict);
     }
 
     [Test]
@@ -58,6 +58,6 @@ public class BookRegistrationTests: WebApiFixture
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
     }
 }

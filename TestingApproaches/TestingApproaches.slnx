@@ -5,6 +5,7 @@
         <File Path="bench.sh"/>
         <File Path="db-dev.sh"/>
         <File Path="db-dev-mongo.sh"/>
+        <File Path="global.json"/>
         <File Path="README.md"/>
     </Folder>
     <Project Path="BusinessLogicModule/BusinessLogicModule.csproj"/>

@@ -3,7 +3,6 @@ using Testcontainers.MsSql;
 
 namespace DbSqlContainerInMemory.Tests;
 
-[SetUpFixture]
 public class SqlContainerSetup
 {
     private const string SqlServerImage = "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
@@ -19,8 +18,8 @@ public class SqlContainerSetup
     private static MsSqlContainer? ephemeralContainer;
     private static string rootConnectionString = null!;
 
-    [OneTimeSetUp]
-    public async Task OneTimeSetUp()
+    [Before(Assembly)]
+    public static async Task OneTimeSetUp()
     {
         string persistentConnectionString = BuildConnectionString(PersistentHost, PersistentPort, PersistentPassword);
 
@@ -39,8 +38,8 @@ public class SqlContainerSetup
         rootConnectionString = ephemeralContainer.GetConnectionString();
     }
 
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
+    [After(Assembly)]
+    public static async Task OneTimeTearDown()
     {
         if (ephemeralContainer is { })
             await ephemeralContainer.DisposeAsync();

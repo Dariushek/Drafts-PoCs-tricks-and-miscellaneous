@@ -3,8 +3,8 @@ using BusinessLogicModule.Books;
 
 namespace DbSqlContainerInMemory.Tests.CommandHandlers.Books.BookAvailability;
 
-[TestFixture(PersistenceKind.Ef)]
-[TestFixture(PersistenceKind.PlainSql)]
+[Arguments(PersistenceKind.Ef)]
+[Arguments(PersistenceKind.PlainSql)]
 public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persistenceKind)
 {
     [Test]
@@ -16,9 +16,9 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle
             (new(registered.Value.BookId), CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.True);
-        Assert.That(result.Value.IsAvailable, Is.True);
-        Assert.That(result.Value.CopiesAvailable, Is.EqualTo(3));
+        await Assert.That(result.IsSuccess).IsTrue();
+        await Assert.That(result.Value.IsAvailable).IsTrue();
+        await Assert.That(result.Value.CopiesAvailable).IsEqualTo(3);
     }
 
     [Test]
@@ -31,9 +31,9 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle
             (new(registered.Value.BookId), CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.True);
-        Assert.That(result.Value.IsAvailable, Is.False);
-        Assert.That(result.Value.CopiesAvailable, Is.EqualTo(0));
+        await Assert.That(result.IsSuccess).IsTrue();
+        await Assert.That(result.Value.IsAvailable).IsFalse();
+        await Assert.That(result.Value.CopiesAvailable).IsEqualTo(0);
     }
 
     [Test]
@@ -42,7 +42,7 @@ public class EndpointTests(PersistenceKind persistenceKind): ModuleFixture(persi
         Result<BusinessLogicModule.Books.BookAvailability> result = await CheckBookAvailabilityHandler.Handle
             (new(Guid.NewGuid()), CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 404));
+        await Assert.That(result.IsSuccess).IsFalse();
+        await Assert.That(result.Errors).Contains(error => error.StatusCode == 404);
     }
 }

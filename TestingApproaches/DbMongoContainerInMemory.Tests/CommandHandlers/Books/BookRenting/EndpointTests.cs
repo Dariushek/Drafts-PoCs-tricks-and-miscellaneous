@@ -14,8 +14,8 @@ public class EndpointTests: ModuleFixture
         Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle
             (new(registered.Value.BookId), CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.True);
-        Assert.That(result.Value.CopiesAvailable, Is.EqualTo(1));
+        await Assert.That(result.IsSuccess).IsTrue();
+        await Assert.That(result.Value.CopiesAvailable).IsEqualTo(1);
     }
 
     [Test]
@@ -28,8 +28,8 @@ public class EndpointTests: ModuleFixture
         Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle
             (new(registered.Value.BookId), CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 409));
+        await Assert.That(result.IsSuccess).IsFalse();
+        await Assert.That(result.Errors).Contains(error => error.StatusCode == 409);
     }
 
     [Test]
@@ -38,7 +38,7 @@ public class EndpointTests: ModuleFixture
         Result<BusinessLogicModule.Books.BookRenting> result = await RentBookHandler.Handle
             (new(Guid.NewGuid()), CancellationToken.None);
 
-        Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Errors, Has.Some.Matches<Error>(error => error.StatusCode == 404));
+        await Assert.That(result.IsSuccess).IsFalse();
+        await Assert.That(result.Errors).Contains(error => error.StatusCode == 404);
     }
 }

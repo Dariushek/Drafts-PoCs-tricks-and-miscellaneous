@@ -11,7 +11,7 @@ public class ClosingRegistrationTests: WebApiFixture
     {
         HttpResponseMessage response = await Client.PostAsync("/books/registration/close", null);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
     }
 
     [Test]
@@ -22,6 +22,6 @@ public class ClosingRegistrationTests: WebApiFixture
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/books", command);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
     }
 }

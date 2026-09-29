@@ -5,8 +5,8 @@ using BusinessLogicModule.Books;
 
 namespace DbSqlContainerInMemory.Tests.WebApi.Books;
 
-[TestFixture(PersistenceKind.Ef)]
-[TestFixture(PersistenceKind.PlainSql)]
+[Arguments(PersistenceKind.Ef)]
+[Arguments(PersistenceKind.PlainSql)]
 public class BookRentingTests(PersistenceKind persistenceKind): WebApiFixture(persistenceKind)
 {
     [Test]
@@ -17,11 +17,11 @@ public class BookRentingTests(PersistenceKind persistenceKind): WebApiFixture(pe
 
         HttpResponseMessage response = await Client.PostAsync($"/books/{bookId}/rent", null);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        
         var result = await response.Content.ReadFromJsonAsync<BookRenting>();
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result!.CopiesAvailable, Is.EqualTo(1));
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result!.CopiesAvailable).IsEqualTo(1);
     }
 
     [Test]
@@ -33,7 +33,7 @@ public class BookRentingTests(PersistenceKind persistenceKind): WebApiFixture(pe
 
         HttpResponseMessage response = await Client.PostAsync($"/books/{bookId}/rent", null);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Conflict);
     }
 
     [Test]
@@ -41,6 +41,6 @@ public class BookRentingTests(PersistenceKind persistenceKind): WebApiFixture(pe
     {
         HttpResponseMessage response = await Client.PostAsync($"/books/{Guid.NewGuid()}/rent", null);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }
 }

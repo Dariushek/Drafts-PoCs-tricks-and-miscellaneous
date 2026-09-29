@@ -22,8 +22,8 @@ run() {
 
             local start end
             start=$(date +%s.%N)
-            dotnet test "$csproj" --no-build --no-restore \
-                --logger "trx;LogFileName=result.trx" \
+            dotnet test --project "$csproj" --no-build --no-restore \
+                --report-trx --report-trx-filename result.trx \
                 --results-directory "$dir" \
                 > "$dir/console.log" 2>&1 || true
             end=$(date +%s.%N)
