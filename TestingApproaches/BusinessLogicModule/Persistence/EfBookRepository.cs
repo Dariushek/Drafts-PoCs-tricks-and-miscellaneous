@@ -5,15 +5,22 @@ namespace BusinessLogicModule.Persistence;
 
 internal sealed class EfBookRepository(BooksDbContext db): IBookRepository
 {
-    public Task<BookRegistrationWindow> GetRegistrationWindowAsync
-        (CancellationToken cancellationToken)
-        => db.RegistrationWindow.SingleAsync(cancellationToken);
+    public Task<BookRegistrationWindow> GetRegistrationWindowAsync(
+        CancellationToken cancellationToken)
+    {
+        return db.RegistrationWindow.SingleAsync(cancellationToken);
+    }
 
-    public Task SaveRegistrationWindowAsync
-        (BookRegistrationWindow window, CancellationToken cancellationToken)
-        => db.SaveChangesAsync(cancellationToken);
+    public Task SaveRegistrationWindowAsync(
+        BookRegistrationWindow window,
+        CancellationToken cancellationToken)
+    {
+        return db.SaveChangesAsync(cancellationToken);
+    }
 
-    public Task<bool> IsIsbnRegisteredAsync(string isbn, CancellationToken cancellationToken)
+    public Task<bool> IsIsbnRegisteredAsync(
+        string isbn,
+        CancellationToken cancellationToken)
     {
         return db.Books.AnyAsync(book => book.Isbn == isbn, cancellationToken);
     }
@@ -24,10 +31,17 @@ internal sealed class EfBookRepository(BooksDbContext db): IBookRepository
         await db.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public Task<Book?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken)
     {
-        return db.Books.SingleOrDefaultAsync(book => book.Id == id, cancellationToken);
+        return db.Books.SingleOrDefaultAsync(
+            book => book.Id == id,
+            cancellationToken);
     }
 
-    public Task SaveAsync(Book book, CancellationToken cancellationToken) => db.SaveChangesAsync(cancellationToken);
+    public Task SaveAsync(Book book, CancellationToken cancellationToken)
+    {
+        return db.SaveChangesAsync(cancellationToken);
+    }
 }

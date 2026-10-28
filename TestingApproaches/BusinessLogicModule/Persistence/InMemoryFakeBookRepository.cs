@@ -11,19 +11,27 @@ internal sealed class InMemoryFakeBookRepository: IBookRepository
     private const int RegistrationWindowId = 1;
 
     private readonly ConcurrentDictionary<Guid, Book> books = new();
-    private BookRegistrationWindow registrationWindow = BookRegistrationWindow.Opened(RegistrationWindowId);
 
-    public Task<BookRegistrationWindow> GetRegistrationWindowAsync
-        (CancellationToken cancellationToken)
-        => Task.FromResult(registrationWindow);
+    private BookRegistrationWindow registrationWindow =
+        BookRegistrationWindow.Opened(RegistrationWindowId);
 
-    public Task SaveRegistrationWindowAsync(BookRegistrationWindow window, CancellationToken cancellationToken)
+    public Task<BookRegistrationWindow> GetRegistrationWindowAsync(
+        CancellationToken cancellationToken)
+    {
+        return Task.FromResult(registrationWindow);
+    }
+
+    public Task SaveRegistrationWindowAsync(
+        BookRegistrationWindow window,
+        CancellationToken cancellationToken)
     {
         registrationWindow = window;
         return Task.CompletedTask;
     }
 
-    public Task<bool> IsIsbnRegisteredAsync(string isbn, CancellationToken cancellationToken)
+    public Task<bool> IsIsbnRegisteredAsync(
+        string isbn,
+        CancellationToken cancellationToken)
     {
         return Task.FromResult(books.Values.Any(book => book.Isbn == isbn));
     }
@@ -34,9 +42,15 @@ internal sealed class InMemoryFakeBookRepository: IBookRepository
         return Task.CompletedTask;
     }
 
-    public Task<Book?> GetByIdAsync
-        (Guid id, CancellationToken cancellationToken)
-        => Task.FromResult(books.GetValueOrDefault(id));
+    public Task<Book?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return Task.FromResult(books.GetValueOrDefault(id));
+    }
 
-    public Task SaveAsync(Book book, CancellationToken cancellationToken) => Task.CompletedTask;
+    public Task SaveAsync(Book book, CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 }

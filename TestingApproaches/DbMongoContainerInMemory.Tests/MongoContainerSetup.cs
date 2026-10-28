@@ -24,8 +24,11 @@ public class MongoContainerSetup
     [Before(Assembly)]
     public static async Task OneTimeSetUp()
     {
-        string persistentConnectionString = BuildConnectionString
-            (PersistentHost, PersistentPort, PersistentUsername, PersistentPassword);
+        var persistentConnectionString = BuildConnectionString(
+            PersistentHost,
+            PersistentPort,
+            PersistentUsername,
+            PersistentPassword);
 
         if (await IsReachable(persistentConnectionString))
         {
@@ -33,9 +36,10 @@ public class MongoContainerSetup
             return;
         }
 
-        ephemeralContainer = new MongoDbBuilder(MongoImage).WithUsername(PersistentUsername)
-                                                           .WithPassword(PersistentPassword)
-                                                           .Build();
+        ephemeralContainer = new MongoDbBuilder(MongoImage)
+            .WithUsername(PersistentUsername)
+            .WithPassword(PersistentPassword)
+            .Build();
 
         await ephemeralContainer.StartAsync();
         ConnectionString = ephemeralContainer.GetConnectionString();
@@ -52,16 +56,23 @@ public class MongoContainerSetup
         // ./db-dev-mongo.sh clean to reset it.
     }
 
-    private static string BuildConnectionString
-        (string host, int port, string username, string password)
-        => $"mongodb://{username}:{password}@{host}:{port}/?directConnection=true";
+    private static string BuildConnectionString(
+        string host,
+        int port,
+        string username,
+        string password)
+    {
+        return
+            $"mongodb://{username}:{password}@{host}:{port}/?directConnection=true";
+    }
 
     private static async Task<bool> IsReachable(string connectionString)
     {
         try
         {
             var client = new MongoClient(connectionString);
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+            using var timeout =
+                new CancellationTokenSource(TimeSpan.FromSeconds(1));
             await client.ListDatabaseNamesAsync(timeout.Token);
             return true;
         }

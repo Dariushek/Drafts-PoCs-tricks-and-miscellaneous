@@ -15,22 +15,17 @@ public abstract class WebApiFixture
     {
         var databaseName = $"test_{Guid.NewGuid():N}";
 
-        Factory = new WebApplicationFactory<Program>().WithWebHostBuilder
-        (
-            builder => builder.ConfigureServices
-            (
-                services =>
+        Factory =
+            new WebApplicationFactory<Program>().WithWebHostBuilder(builder
+                => builder.ConfigureServices(services =>
                 {
                     services.RemoveBusinessLogicModule();
-                    services.AddBusinessLogicModule
-                    (
+                    services.AddBusinessLogicModule(
                         persistenceKind: PersistenceKind.Mongo,
-                        mongoConnectionString: MongoContainerSetup.ConnectionString,
-                        mongoDatabaseName: databaseName
-                    );
-                }
-            )
-        );
+                        mongoConnectionString: MongoContainerSetup
+                            .ConnectionString,
+                        mongoDatabaseName: databaseName);
+                }));
 
         Factory.Services.InitializeBusinessLogicModuleDatabase();
         Client = Factory.CreateClient();
@@ -43,22 +38,28 @@ public abstract class WebApiFixture
         Factory.Dispose();
     }
 
-    protected Task<HttpResponseMessage> GivenRegisteredBookAsync
-        (RegisterBook command)
-        => Client.PostAsJsonAsync("/books", command);
+    protected Task<HttpResponseMessage> GivenRegisteredBookAsync(
+        RegisterBook command)
+    {
+        return Client.PostAsJsonAsync("/books", command);
+    }
 
     protected Task<HttpResponseMessage> GivenRegistrationClosedAsync()
-        => Client.PostAsync("/books/registration/close", null);
+    {
+        return Client.PostAsync("/books/registration/close", null);
+    }
 
     protected async Task<Guid> GivenRegisteredBookIdAsync(RegisterBook command)
     {
-        HttpResponseMessage response = await GivenRegisteredBookAsync(command);
-        var result = await response.Content.ReadFromJsonAsync<BookRegistration>();
+        var response = await GivenRegisteredBookAsync(command);
+        var result =
+            await response.Content.ReadFromJsonAsync<BookRegistration>();
 
         return result!.BookId;
     }
 
-    protected Task<HttpResponseMessage> GivenRentedBookAsync
-        (Guid bookId)
-        => Client.PostAsync($"/books/{bookId}/rent", null);
+    protected Task<HttpResponseMessage> GivenRentedBookAsync(Guid bookId)
+    {
+        return Client.PostAsync($"/books/{bookId}/rent", null);
+    }
 }

@@ -5,7 +5,8 @@ namespace DbSqlContainerInMemory.Tests;
 
 public class SqlContainerSetup
 {
-    private const string SqlServerImage = "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
+    private const string SqlServerImage =
+        "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
 
     // Matches db-dev.sh. A long-lived container started once for the local
     // dev loop; when it's reachable we connect straight to it instead of
@@ -21,7 +22,10 @@ public class SqlContainerSetup
     [Before(Assembly)]
     public static async Task OneTimeSetUp()
     {
-        string persistentConnectionString = BuildConnectionString(PersistentHost, PersistentPort, PersistentPassword);
+        var persistentConnectionString = BuildConnectionString(
+            PersistentHost,
+            PersistentPort,
+            PersistentPassword);
 
         if (await IsReachable(persistentConnectionString))
         {
@@ -29,10 +33,11 @@ public class SqlContainerSetup
             return;
         }
 
-        ephemeralContainer = new MsSqlBuilder(SqlServerImage).WithTmpfsMount("/var/opt/mssql/data")
-                                                             .WithTmpfsMount("/var/opt/mssql/log")
-                                                             .WithTmpfsMount("/var/opt/mssql/secrets")
-                                                             .Build();
+        ephemeralContainer = new MsSqlBuilder(SqlServerImage)
+            .WithTmpfsMount("/var/opt/mssql/data")
+            .WithTmpfsMount("/var/opt/mssql/log")
+            .WithTmpfsMount("/var/opt/mssql/secrets")
+            .Build();
 
         await ephemeralContainer.StartAsync();
         rootConnectionString = ephemeralContainer.GetConnectionString();
@@ -59,7 +64,10 @@ public class SqlContainerSetup
         return builder.ConnectionString;
     }
 
-    private static string BuildConnectionString(string host, int port, string password)
+    private static string BuildConnectionString(
+        string host,
+        int port,
+        string password)
     {
         var builder = new SqlConnectionStringBuilder
         {
@@ -77,7 +85,8 @@ public class SqlContainerSetup
         try
         {
             await using var connection = new SqlConnection(connectionString);
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+            using var timeout =
+                new CancellationTokenSource(TimeSpan.FromSeconds(1));
             await connection.OpenAsync(timeout.Token);
             return true;
         }

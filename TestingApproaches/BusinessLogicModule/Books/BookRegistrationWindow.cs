@@ -9,18 +9,22 @@ internal sealed class BookRegistrationWindow
     public bool IsOpen { get; private set; }
 
     public static BookRegistrationWindow Opened(int id)
-        => new()
+    {
+        return new()
         {
             Id = id,
             IsOpen = true
         };
+    }
 
     internal static BookRegistrationWindow FromPersistence(int id, bool isOpen)
-        => new()
+    {
+        return new()
         {
             Id = id,
             IsOpen = isOpen
         };
+    }
 
     public void Close() { IsOpen = false; }
 }

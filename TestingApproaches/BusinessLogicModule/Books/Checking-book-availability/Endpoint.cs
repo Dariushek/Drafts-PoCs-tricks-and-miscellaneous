@@ -10,22 +10,30 @@ internal static partial class Endpoint
     public static void MapBookAvailability(this IEndpointRouteBuilder app)
     {
         app.MapGet("/books/{bookId:guid}/availability", HandleAvailability)
-           .WithName("BookAvailability");
+            .WithName("BookAvailability");
     }
 
-    private static async Task<Results<ProblemHttpResult, Ok<BookAvailability>>> HandleAvailability
-        (Guid bookId, ICheckBookAvailabilityHandler handler, CancellationToken cancellationToken)
+    private static async Task<Results<ProblemHttpResult, Ok<BookAvailability>>>
+        HandleAvailability(
+            Guid bookId,
+            ICheckBookAvailabilityHandler handler,
+            CancellationToken cancellationToken)
     {
-        Result<BookAvailability> result = await handler.Handle(new(bookId), cancellationToken);
+        var result = await handler.Handle(new(bookId), cancellationToken);
 
-        return result.Match<Results<ProblemHttpResult, Ok<BookAvailability>>>
-            (value => TypedResults.Ok(value), MapAvailabilityErrors);
+        return result.Match<Results<ProblemHttpResult, Ok<BookAvailability>>>(
+            value => TypedResults.Ok(value),
+            MapAvailabilityErrors);
     }
 
-    private static Results<ProblemHttpResult, Ok<BookAvailability>> MapAvailabilityErrors(IReadOnlyList<Error> errors)
+    private static Results<ProblemHttpResult, Ok<BookAvailability>>
+        MapAvailabilityErrors(IReadOnlyList<Error> errors)
     {
-        Error first = errors[0];
+        var first = errors[0];
 
-        return TypedResults.Problem(title: first.Code, detail: first.Message, statusCode: first.StatusCode);
+        return TypedResults.Problem(
+            title: first.Code,
+            detail: first.Message,
+            statusCode: first.StatusCode);
     }
 }

@@ -7,40 +7,56 @@ namespace DbSqlContainerInMemory.Tests.WebApi.Books;
 
 [Arguments(PersistenceKind.Ef)]
 [Arguments(PersistenceKind.PlainSql)]
-public class BookRentingTests(PersistenceKind persistenceKind): WebApiFixture(persistenceKind)
+public class BookRentingTests(PersistenceKind persistenceKind)
+    : WebApiFixture(persistenceKind)
 {
     [Test]
     public async Task Renting_a_book_decreases_copies_available()
     {
-        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 2);
-        Guid bookId = await GivenRegisteredBookIdAsync(command);
+        var command = new RegisterBook(
+            "978-0-13-468599-1",
+            "Clean Code",
+            "Robert C. Martin",
+            2);
+        var bookId = await GivenRegisteredBookIdAsync(command);
 
-        HttpResponseMessage response = await Client.PostAsync($"/books/{bookId}/rent", null);
+        var response = await Client.PostAsync($"/books/{bookId}/rent", null);
 
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        
+        await Assert.That(response.StatusCode)
+            .IsEqualTo(HttpStatusCode.OK);
+
         var result = await response.Content.ReadFromJsonAsync<BookRenting>();
-        await Assert.That(result).IsNotNull();
-        await Assert.That(result!.CopiesAvailable).IsEqualTo(1);
+        await Assert.That(result)
+            .IsNotNull();
+        await Assert.That(result!.CopiesAvailable)
+            .IsEqualTo(1);
     }
 
     [Test]
     public async Task Book_out_of_copies_cannot_be_rented()
     {
-        var command = new RegisterBook("978-0-13-468599-1", "Clean Code", "Robert C. Martin", 1);
-        Guid bookId = await GivenRegisteredBookIdAsync(command);
+        var command = new RegisterBook(
+            "978-0-13-468599-1",
+            "Clean Code",
+            "Robert C. Martin",
+            1);
+        var bookId = await GivenRegisteredBookIdAsync(command);
         await GivenRentedBookAsync(bookId);
 
-        HttpResponseMessage response = await Client.PostAsync($"/books/{bookId}/rent", null);
+        var response = await Client.PostAsync($"/books/{bookId}/rent", null);
 
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Conflict);
+        await Assert.That(response.StatusCode)
+            .IsEqualTo(HttpStatusCode.Conflict);
     }
 
     [Test]
     public async Task Unknown_book_cannot_be_rented()
     {
-        HttpResponseMessage response = await Client.PostAsync($"/books/{Guid.NewGuid()}/rent", null);
+        var response = await Client.PostAsync(
+            $"/books/{Guid.NewGuid()}/rent",
+            null);
 
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+        await Assert.That(response.StatusCode)
+            .IsEqualTo(HttpStatusCode.NotFound);
     }
 }

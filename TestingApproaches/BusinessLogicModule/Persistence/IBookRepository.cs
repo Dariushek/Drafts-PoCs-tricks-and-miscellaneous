@@ -4,11 +4,16 @@ namespace BusinessLogicModule.Persistence;
 
 internal interface IBookRepository
 {
-    Task<BookRegistrationWindow> GetRegistrationWindowAsync(CancellationToken cancellationToken);
+    Task<BookRegistrationWindow> GetRegistrationWindowAsync(
+        CancellationToken cancellationToken);
 
-    Task SaveRegistrationWindowAsync(BookRegistrationWindow window, CancellationToken cancellationToken);
+    Task SaveRegistrationWindowAsync(
+        BookRegistrationWindow window,
+        CancellationToken cancellationToken);
 
-    Task<bool> IsIsbnRegisteredAsync(string isbn, CancellationToken cancellationToken);
+    Task<bool> IsIsbnRegisteredAsync(
+        string isbn,
+        CancellationToken cancellationToken);
 
     Task AddAsync(Book book, CancellationToken cancellationToken);
 

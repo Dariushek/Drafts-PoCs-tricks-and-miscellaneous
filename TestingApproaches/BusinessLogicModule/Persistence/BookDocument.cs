@@ -11,13 +11,13 @@ internal sealed class BookDocument
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
-    public string Isbn { get; set; } = "";
+    public string Isbn { get; init; } = "";
 
-    public string Title { get; set; } = "";
+    public string Title { get; init; } = "";
 
-    public string Author { get; set; } = "";
+    public string Author { get; init; } = "";
 
-    public int CopiesAvailable { get; set; }
+    public int CopiesAvailable { get; init; }
 }

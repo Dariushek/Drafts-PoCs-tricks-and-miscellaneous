@@ -12,36 +12,49 @@ namespace BusinessLogicModule.Persistence;
 // AddBusinessLogicModule wiring.
 internal sealed class PlainSqlBookRepository(BooksDbContext db): IBookRepository
 {
-    private readonly string connectionString = db.Database.GetConnectionString()!;
+    private readonly string connectionString =
+        db.Database.GetConnectionString()!;
 
 
-    public async Task<BookRegistrationWindow> GetRegistrationWindowAsync(CancellationToken cancellationToken)
+    public async Task<BookRegistrationWindow> GetRegistrationWindowAsync(
+        CancellationToken cancellationToken)
     {
-        await using SqlConnection connection = await OpenConnectionAsync(cancellationToken);
-        await using SqlCommand command = connection.CreateCommand();
+        await using var connection =
+            await OpenConnectionAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
         command.CommandText = "SELECT Id, IsOpen FROM RegistrationWindow";
 
-        await using SqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+        await using var reader =
+            await command.ExecuteReaderAsync(cancellationToken);
         await reader.ReadAsync(cancellationToken);
 
-        return BookRegistrationWindow.FromPersistence(reader.GetInt32(0), reader.GetBoolean(1));
+        return BookRegistrationWindow.FromPersistence(
+            reader.GetInt32(0),
+            reader.GetBoolean(1));
     }
 
-    public async Task SaveRegistrationWindowAsync(BookRegistrationWindow window, CancellationToken cancellationToken)
+    public async Task SaveRegistrationWindowAsync(
+        BookRegistrationWindow window,
+        CancellationToken cancellationToken)
     {
-        await using SqlConnection connection = await OpenConnectionAsync(cancellationToken);
-        await using SqlCommand command = connection.CreateCommand();
-        command.CommandText = "UPDATE RegistrationWindow SET IsOpen = @IsOpen WHERE Id = @Id";
+        await using var connection =
+            await OpenConnectionAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
+        command.CommandText =
+            "UPDATE RegistrationWindow SET IsOpen = @IsOpen WHERE Id = @Id";
         command.Parameters.AddWithValue("@IsOpen", window.IsOpen);
         command.Parameters.AddWithValue("@Id", window.Id);
 
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    public async Task<bool> IsIsbnRegisteredAsync(string isbn, CancellationToken cancellationToken)
+    public async Task<bool> IsIsbnRegisteredAsync(
+        string isbn,
+        CancellationToken cancellationToken)
     {
-        await using SqlConnection connection = await OpenConnectionAsync(cancellationToken);
-        await using SqlCommand command = connection.CreateCommand();
+        await using var connection =
+            await OpenConnectionAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
         command.CommandText = "SELECT COUNT(1) FROM Books WHERE Isbn = @Isbn";
         command.Parameters.AddWithValue("@Isbn", isbn);
 
@@ -52,8 +65,9 @@ internal sealed class PlainSqlBookRepository(BooksDbContext db): IBookRepository
 
     public async Task AddAsync(Book book, CancellationToken cancellationToken)
     {
-        await using SqlConnection connection = await OpenConnectionAsync(cancellationToken);
-        await using SqlCommand command = connection.CreateCommand();
+        await using var connection =
+            await OpenConnectionAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
         command.CommandText = """
                               INSERT INTO Books (Id, Isbn, Title, Author, CopiesAvailable)
                               VALUES (@Id, @Isbn, @Title, @Author, @CopiesAvailable)
@@ -63,34 +77,48 @@ internal sealed class PlainSqlBookRepository(BooksDbContext db): IBookRepository
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    public async Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Book?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken)
     {
-        await using SqlConnection connection = await OpenConnectionAsync(cancellationToken);
-        await using SqlCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT Id, Isbn, Title, Author, CopiesAvailable FROM Books WHERE Id = @Id";
+        await using var connection =
+            await OpenConnectionAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
+        command.CommandText =
+            "SELECT Id, Isbn, Title, Author, CopiesAvailable FROM Books WHERE Id = @Id";
         command.Parameters.AddWithValue("@Id", id);
 
-        await using SqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+        await using var reader =
+            await command.ExecuteReaderAsync(cancellationToken);
 
         if (!await reader.ReadAsync(cancellationToken))
             return null;
 
-        return Book.FromPersistence
-            (reader.GetGuid(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetInt32(4));
+        return Book.FromPersistence(
+            reader.GetGuid(0),
+            reader.GetString(1),
+            reader.GetString(2),
+            reader.GetString(3),
+            reader.GetInt32(4));
     }
 
     public async Task SaveAsync(Book book, CancellationToken cancellationToken)
     {
-        await using SqlConnection connection = await OpenConnectionAsync(cancellationToken);
-        await using SqlCommand command = connection.CreateCommand();
-        command.CommandText = "UPDATE Books SET CopiesAvailable = @CopiesAvailable WHERE Id = @Id";
-        command.Parameters.AddWithValue("@CopiesAvailable", book.CopiesAvailable);
+        await using var connection =
+            await OpenConnectionAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
+        command.CommandText =
+            "UPDATE Books SET CopiesAvailable = @CopiesAvailable WHERE Id = @Id";
+        command.Parameters.AddWithValue(
+            "@CopiesAvailable",
+            book.CopiesAvailable);
         command.Parameters.AddWithValue("@Id", book.Id);
 
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    private async Task<SqlConnection> OpenConnectionAsync(CancellationToken cancellationToken)
+    private async Task<SqlConnection> OpenConnectionAsync(
+        CancellationToken cancellationToken)
     {
         var connection = new SqlConnection(connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -104,6 +132,8 @@ internal sealed class PlainSqlBookRepository(BooksDbContext db): IBookRepository
         command.Parameters.AddWithValue("@Isbn", book.Isbn);
         command.Parameters.AddWithValue("@Title", book.Title);
         command.Parameters.AddWithValue("@Author", book.Author);
-        command.Parameters.AddWithValue("@CopiesAvailable", book.CopiesAvailable);
+        command.Parameters.AddWithValue(
+            "@CopiesAvailable",
+            book.CopiesAvailable);
     }
 }

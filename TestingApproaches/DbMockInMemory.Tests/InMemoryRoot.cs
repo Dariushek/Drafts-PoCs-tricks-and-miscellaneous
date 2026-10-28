@@ -11,5 +11,5 @@ namespace DbMockInMemory.Tests;
 // from a different scope even with the exact same database name.
 public static class InMemoryRoot
 {
-    public static readonly InMemoryDatabaseRoot Instance = new();
+    public readonly static InMemoryDatabaseRoot Instance = new();
 }

@@ -5,39 +5,38 @@ namespace BusinessLogicModule.Books;
 
 public interface IRentBookHandler
 {
-    Task<Result<BookRenting>> Handle(RentBook command, CancellationToken cancellationToken);
+    Task<Result<BookRenting>> Handle(
+        RentBook command,
+        CancellationToken cancellationToken);
 }
 
-internal sealed class RentBookHandler(IBookRepository repository): IRentBookHandler
+internal sealed class RentBookHandler(IBookRepository repository)
+    : IRentBookHandler
 {
-    public async Task<Result<BookRenting>> Handle(RentBook command, CancellationToken cancellationToken)
+    public async Task<Result<BookRenting>> Handle(
+        RentBook command,
+        CancellationToken cancellationToken)
     {
-        Book? book = await repository.GetByIdAsync(command.BookId, cancellationToken);
+        var book = await repository.GetByIdAsync(
+            command.BookId,
+            cancellationToken);
 
         if (book is null)
         {
-            return Result<BookRenting>.Failure
-            (
-                new Error
-                (
+            return Result<BookRenting>.Failure(
+                new Error(
                     "BookNotFound",
                     $"No book found with id '{command.BookId}'.",
-                    StatusCode: StatusCodes.Status404NotFound
-                )
-            );
+                    StatusCode: StatusCodes.Status404NotFound));
         }
 
         if (!book.IsAvailableToRent)
         {
-            return Result<BookRenting>.Failure
-            (
-                new Error
-                (
+            return Result<BookRenting>.Failure(
+                new Error(
                     "BookOutOfStock",
                     $"Book '{book.Title}' has no copies available to rent.",
-                    StatusCode: StatusCodes.Status409Conflict
-                )
-            );
+                    StatusCode: StatusCodes.Status409Conflict));
         }
 
         book.Rent();

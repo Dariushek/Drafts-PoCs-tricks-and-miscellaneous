@@ -9,9 +9,21 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
 {
     private ServiceProvider provider = null!;
 
-    protected IRegisterBookHandler RegisterBookHandler { get; private set; } = null!;
-    protected ICloseRegistrationHandler CloseRegistrationHandler { get; private set; } = null!;
-    protected ICheckBookAvailabilityHandler CheckBookAvailabilityHandler { get; private set; } = null!;
+    protected IRegisterBookHandler RegisterBookHandler { get; private set; } =
+        null!;
+
+    protected ICloseRegistrationHandler CloseRegistrationHandler
+    {
+        get;
+        private set;
+    } = null!;
+
+    protected ICheckBookAvailabilityHandler CheckBookAvailabilityHandler
+    {
+        get;
+        private set;
+    } = null!;
+
     protected IRentBookHandler RentBookHandler { get; private set; } = null!;
 
     [Before(Test)]
@@ -22,9 +34,12 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
         if (persistenceKind == PersistenceKind.Ef)
         {
             var databaseName = Guid.NewGuid()
-                                   .ToString();
-            services.AddBusinessLogicModule
-                (options => options.UseInMemoryDatabase(databaseName, InMemoryRoot.Instance), persistenceKind);
+                .ToString();
+            services.AddBusinessLogicModule(
+                options => options.UseInMemoryDatabase(
+                    databaseName,
+                    InMemoryRoot.Instance),
+                persistenceKind);
         }
         else
             services.AddBusinessLogicModule(persistenceKind: persistenceKind);
@@ -33,22 +48,31 @@ public abstract class ModuleFixture(PersistenceKind persistenceKind)
 
         provider.InitializeBusinessLogicModuleDatabase();
 
-        RegisterBookHandler = provider.GetRequiredService<IRegisterBookHandler>();
-        CloseRegistrationHandler = provider.GetRequiredService<ICloseRegistrationHandler>();
-        CheckBookAvailabilityHandler = provider.GetRequiredService<ICheckBookAvailabilityHandler>();
+        RegisterBookHandler =
+            provider.GetRequiredService<IRegisterBookHandler>();
+        CloseRegistrationHandler =
+            provider.GetRequiredService<ICloseRegistrationHandler>();
+        CheckBookAvailabilityHandler =
+            provider.GetRequiredService<ICheckBookAvailabilityHandler>();
         RentBookHandler = provider.GetRequiredService<IRentBookHandler>();
     }
 
     [After(Test)]
     public void ModuleFixtureTearDown() { provider.Dispose(); }
 
-    protected Task<Result<BookRegistration>> GivenRegisteredBook
-        (RegisterBook command)
-        => RegisterBookHandler.Handle(command, CancellationToken.None);
+    protected Task<Result<BookRegistration>> GivenRegisteredBook(
+        RegisterBook command)
+    {
+        return RegisterBookHandler.Handle(command, CancellationToken.None);
+    }
 
-    protected Task GivenRegistrationClosed() => CloseRegistrationHandler.Handle(new(), CancellationToken.None);
+    protected Task GivenRegistrationClosed()
+    {
+        return CloseRegistrationHandler.Handle(new(), CancellationToken.None);
+    }
 
-    protected Task<Result<BookRenting>> GivenRentedBook
-        (Guid bookId)
-        => RentBookHandler.Handle(new(bookId), CancellationToken.None);
+    protected Task<Result<BookRenting>> GivenRentedBook(Guid bookId)
+    {
+        return RentBookHandler.Handle(new(bookId), CancellationToken.None);
+    }
 }
