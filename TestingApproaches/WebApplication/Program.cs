@@ -18,5 +18,3 @@ if (app.Environment.IsDevelopment())
 app.MapBusinessLogicModule();
 
 app.Run();
-
-public partial class Program;
