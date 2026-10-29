@@ -28,6 +28,7 @@ csharp_style_var_elsewhere = true:warning
 csharp_style_var_for_built_in_types = true:warning
 csharp_style_var_when_type_is_apparent = true:warning
 dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1716.severity = none
 dotnet_diagnostic.CA1812.severity = none
 dotnet_diagnostic.CA2007.severity = none
 dotnet_diagnostic.CA2234.severity = none
